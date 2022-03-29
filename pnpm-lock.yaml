@@ -1,0 +1,31 @@
+lockfileVersion: 5.3
+
+specifiers:
+  nan: 2.x
+  prettier: 2.x
+  tree-sitter-cli: 0.x
+
+dependencies:
+  nan: 2.15.0
+
+devDependencies:
+  prettier: 2.6.1
+  tree-sitter-cli: 0.20.6
+
+packages:
+
+  /nan/2.15.0:
+    resolution: {integrity: sha512-8ZtvEnA2c5aYCZYd1cvgdnU6cqwixRoYg70xPLWUws5ORTa/lnw+u4amixRS/Ac5U5mQVgp9pnlSUnbNWFaWZQ==}
+    dev: false
+
+  /prettier/2.6.1:
+    resolution: {integrity: sha512-8UVbTBYGwN37Bs9LERmxCPjdvPxlEowx2urIL6urHzdb3SDq4B/Z6xLFCblrSnE4iKWcS6ziJ3aOYrc1kz/E2A==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: true
+
+  /tree-sitter-cli/0.20.6:
+    resolution: {integrity: sha512-tjbAeuGSMhco/EnsThjWkQbDIYMDmdkWsTPsa/NJAW7bjaki9P7oM9TkLxfdlnm4LXd1wR5wVSM2/RTLtZbm6A==}
+    hasBin: true
+    requiresBuild: true
+    dev: true

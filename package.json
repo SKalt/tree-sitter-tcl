@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "generate": "tree-sitter generate",
+    "test": "tree-sitter test",
+    "web-ui": "tree-sitter web-ui",
+    "build-wasm": "tree-sitter build-wasm",
+    "parse": "tree-sitter parse",
+    "highlight": "tree-sitter highlight",
+    "tags": "tree-sitter tags",
+    "query": "tree-sitter query",
+    "preui": "yarn generate && yarn generate-wasm",
+    "ui": "yarn web-ui"
+  },
+  "dependencies": {
+    "nan": "2.x"
+  },
+  "devDependencies": {
+    "prettier": "2.x",
+    "tree-sitter-cli": "0.x"
+  },
+  "main": "bindings/node"
+}
