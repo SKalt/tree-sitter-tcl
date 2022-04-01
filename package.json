@@ -12,11 +12,16 @@
     "ui": "yarn web-ui"
   },
   "dependencies": {
-    "nan": "2.x"
+    "nan": "2.x",
+    "ts-dsl-tree-sitter": "github:skalt/ts-dsl-tree-sitter"
   },
   "devDependencies": {
-    "prettier": "2.x",
-    "tree-sitter-cli": "0.x"
+    "prettier": "~2.6.1",
+    "tree-sitter-cli": "0.x",
+    "tslib": "^2.3.1"
   },
-  "main": "bindings/node"
+  "main": "bindings/node",
+  "prettier": {
+    "trailingComma": "all"
+  }
 }

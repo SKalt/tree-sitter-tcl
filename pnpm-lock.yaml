@@ -2,17 +2,37 @@ lockfileVersion: 5.3
 
 specifiers:
   nan: 2.x
-  prettier: 2.x
+  prettier: ~2.6.1
   tree-sitter-cli: 0.x
+  ts-dsl-tree-sitter: github:skalt/ts-dsl-tree-sitter
+  tslib: ^2.3.1
 
 dependencies:
   nan: 2.15.0
+  ts-dsl-tree-sitter: github.com/skalt/ts-dsl-tree-sitter/4f5bb535837865c8b94e33322bcc0d88885e5c03
 
 devDependencies:
   prettier: 2.6.1
   tree-sitter-cli: 0.20.6
+  tslib: 2.3.1
 
 packages:
+
+  /debug/4.3.4:
+    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+    dependencies:
+      ms: 2.1.2
+    dev: false
+
+  /ms/2.1.2:
+    resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
+    dev: false
 
   /nan/2.15.0:
     resolution: {integrity: sha512-8ZtvEnA2c5aYCZYd1cvgdnU6cqwixRoYg70xPLWUws5ORTa/lnw+u4amixRS/Ac5U5mQVgp9pnlSUnbNWFaWZQ==}
@@ -29,3 +49,18 @@ packages:
     hasBin: true
     requiresBuild: true
     dev: true
+
+  /tslib/2.3.1:
+    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
+    dev: true
+
+  github.com/skalt/ts-dsl-tree-sitter/4f5bb535837865c8b94e33322bcc0d88885e5c03:
+    resolution: {tarball: https://codeload.github.com/skalt/ts-dsl-tree-sitter/tar.gz/4f5bb535837865c8b94e33322bcc0d88885e5c03}
+    name: ts-dsl-tree-sitter
+    version: 1.0.0
+    engines: {node: '>=10'}
+    dependencies:
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
