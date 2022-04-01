@@ -37,10 +37,43 @@ export const integer = () => /\d+/;
 export const float = () => seq(integer, ".", integer);
 // TODO: all the grammar constructs
 export const command = () =>
-  seq(_padding, choice(set, _escaped_newline, repeat(word)), _cmd_end);
+  seq(
+    _padding,
+    choice(
+      set_cmd,
+      array_cmd,
+      break_cmd,
+      concat_cmd,
+      for_cmd,
+      foreach_cmd,
+      proc_call,
+      list_cmd,
+      error_cmd,
+      catch_cmd,
+      return_cmd,
+      apply_cmd,
+      after_cmd,
+      rename_cmd,
+      expr_cmd,
+      incr_cmd,
+      if_cond_cmd,
+      global_cmd,
+      while_cmd,
+      proc_def_cmd,
+      namespace_cmd,
+      try_cmd,
+      lset_cmd,
+      lappend_cmd,
+      dict_cmd, // TODO
+      unset_cmd,
+      switch_cmd,
+      _escaped_newline,
+    ),
+    _cmd_end,
+  );
 
 // https://tcl.tk/man/tcl8.7/TclCmd/set.html
-export const set = () =>
+export const set_cmd = () =>
   seq("set", field("variable", word), optional(field("value", word)));
 
 //  https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1383
@@ -79,8 +112,8 @@ export const tcl_word: RuleOrLiteral = choice(
 // include here any core language commands which cover iteration, namespacing, or assignment
 
 // export const list_literal = () => choice();
-export const default_cmd = (keyword: RuleOrLiteral = word) =>
-  seq(keyword, repeat(word));
+const default_cmd = (cmd: RuleOrLiteral = word) => seq(cmd, repeat(word));
+export const proc_call = default_cmd(field("name", word));
 /**https://tcl.tk/man/tcl8.7/TclCmd/array.html */
 export const array_cmd = () =>
   seq(
@@ -243,6 +276,7 @@ export const while_cmd = () => seq("while", conditional_test, _body);
 export const proc_def_cmd = () =>
   seq("proc", field("name", bare_word), field("args", word), _body);
 // TODO: info : https://tcl.tk/man/tcl8.7/TclCmd/info.html
+/** https://tcl.tk/man/tcl8.7/TclCmd/namespace.html */
 export const namespace_cmd = () =>
   seq(
     "namespace",
@@ -255,13 +289,13 @@ export const namespace_cmd = () =>
       seq("code", _body()),
       seq("current"),
       seq("delete", repeat(word)),
-      seq("ensemble"),
+      seq("ensemble", repeat(word)), // TODO: handle map, parameter, prefixes, subcommands
       seq("eval", word /* namespace */, choice(tcl_word, repeat1(word))),
       seq("exists", word /*namespace */),
       seq("export", optional("-clear"), repeat(word)), // TODO: mark exports
       seq("forget", repeat(word) /* pattern */),
       seq("import", optional("-force"), repeat(word) /*patterns*/),
-      seq("inscope", word /**namespace */, _body, _args()),
+      seq("inscope", word /**namespace */, _body(), _args()),
       seq("origin", word /**command */),
       seq("parent", optional(word) /**namespace */),
       seq("path", optional(word) /**namespacelist */),
@@ -272,23 +306,101 @@ export const namespace_cmd = () =>
         word /**namespace */,
         repeat(seq(variable_ref, variable_def)),
       ),
-      seq("unknown"),
-      seq("which"),
+      seq("unknown", _body()),
+      seq("which", repeat(choice("-command", "-variable")), variable_ref),
     ),
   );
 
-// ensemble subcommand ?arg ...?
-// eval namespace arg ?arg ...?
-// exists namespace
-// export ?-clear? ?pattern pattern ...?
-// forget ?pattern pattern ...?
-// import ?-force? ?pattern pattern ...?
-// inscope namespace script ?arg ...?
-// origin command
-// parent ?namespace?
-// path ?namespaceList?
-// qualifiers string
-// tail string
-// upvar namespace ?otherVar myVar ...?
-// unknown ?script?
-// which ?-command? ?-variable? name
+/** https://tcl.tk/man/tcl8.7/TclCmd/try.html */
+export const try_cmd = () =>
+  seq(
+    "try",
+    /* handler */
+    repeat(
+      seq(
+        choice("on", "trap"),
+        word /*code/pattern*/,
+        word /* variable list */,
+        tcl_word, // actual handling script
+      ),
+    ),
+    optional(seq("finally", tcl_word)),
+  );
+
+export const lset_cmd = () =>
+  seq(
+    "lset",
+    variable_ref(),
+    field("indices", optional(choice(repeat1(integer), word))),
+    field("value", word),
+  );
+/* https://tcl.tk/man/tcl8.7/TclCmd/lappend.html */
+export const lappend_cmd = () => seq("lappend", variable_ref(), _args());
+/** https://tcl.tk/man/tcl8.7/TclCmd/lassign.html */
+export const lassign_cmd = () => seq("lassign", word, _args());
+/** https://tcl.tk/man/tcl8.7/TclCmd/dict.html#M30 */
+export const dict_cmd = () =>
+  seq(
+    "dict",
+    choice(
+      seq("create", repeat(seq(word, word))),
+      seq(
+        choice("for", "map"),
+        seq("{", word, word, "}"),
+        variable_ref(),
+        tcl_word,
+      ),
+      seq("merge", repeat(word)), // dict merge ?dictionaryValue ...?
+      // lowest precedence
+      seq(word, variable_ref(), repeat(word)),
+    ),
+
+    // dict append dictionaryVariable key ?string ...?
+    // dict exists dictionaryValue key ?key ...?
+    // dict filter dictionaryValue filterType arg ?arg ...?
+    //     dict filter dictionaryValue key ?globPattern ...?
+    //     dict filter dictionaryValue script {keyVariable valueVariable} script
+    //     dict filter dictionaryValue value ?globPattern ...?
+
+    // dict get dictionaryValue ?key ...?
+    // dict getdef dictionaryValue ?key ...? key default
+    // dict getwithdefault dictionaryValue ?key ...? key default
+    // dict incr dictionaryVariable key ?increment?
+    // dict info dictionaryValue
+    // dict keys dictionaryValue ?globPattern?
+    // dict lappend dictionaryVariable key ?value ...?
+
+    // dict remove dictionaryValue ?key ...?
+    // dict replace dictionaryValue ?key value ...?
+    // dict set dictionaryVariable key ?key ...? value
+    // dict size dictionaryValue
+    // dict unset dictionaryVariable key ?key ...?
+    // dict update dictionaryVariable key varName ?key varName ...? body
+    // dict values dictionaryValue ?globPattern?
+    // dict with dictionaryVariable ?key ...? body
+  );
+/** https://tcl.tk/man/tcl8.7/TclCmd/unset.html */
+export const unset_cmd = () => seq("unset", repeat(word));
+/** https://tcl.tk/man/tcl8.7/TclCmd/uplevel.html */
+export const uplevel_cmd = () =>
+  seq(
+    "uplevel",
+    field(
+      "levels_up",
+      optional(choice(integer, seq("#", token.immediate(integer)))),
+    ),
+    choice(tcl_word, repeat1(word)),
+  );
+/** https://tcl.tk/man/tcl8.7/TclCmd/switch.html */
+export const switch_cmd = () =>
+  seq(
+    "switch",
+    repeat(word),
+    optional("--"),
+    choice(
+      repeat1(seq(word, tcl_word)),
+      seq("{", repeat1(seq(word, tcl_word)), "}"),
+    ),
+  );
+/** https://tcl.tk/man/tcl8.7/TclCmd/eval.html */
+export const eval_cmd = () => seq("eval", choice(tcl_word, repeat1(word)));
