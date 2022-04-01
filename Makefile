@@ -1,6 +1,9 @@
 .PHONY: generate test web-ui wasm
 generate: ./src/grammar.json
-	./node_modules/.bin/tree-sitter generate ./src/grammar.json
+	if test -e /tmp/generate.err; then mv /tmp/generate.err /tmp/generate.err.old; fi
+	./node_modules/.bin/tree-sitter generate ./src/grammar.json 2>&1 | tee /tmp/generate.err
+	if diff -u /tmp/generate.err.old /tmp/generate.err; then exit 1; else exit 0; fi
+	# TODO: don't clobber generation return code
 test:
 	./node_modules/.bin/tree-sitter test
 playground: ./tree-sitter-GRAMMAR_NAME.wasm
