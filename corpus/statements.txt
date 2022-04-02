@@ -45,22 +45,10 @@ set {braced name} 27
 ====
 scratch
 ====
-catch {a b c d e f g} asdf
+a(foo)
 ----
 (tcl_script
   (command
-    (tcl_script
-      (catch_cmd
-        (word (bare_word))
-        (tcl_word
-        (command
-          (proc_call_cmd
-            (word (bare_word))
-            (word (bare_word))
-            (word (bare_word))
-            (word (bare_word))
-            (word (bare_word))
-            (word (bare_word))
-            (word (bare_word)))))
-        (word (bare_word))
-        ))))
+    (proc_call_cmd
+      (word (array_ref (word (bare_word)) (word (bare_word))))
+  )))

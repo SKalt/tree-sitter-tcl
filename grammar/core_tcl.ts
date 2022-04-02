@@ -33,6 +33,8 @@ export const _patterns = () =>
 const enum precedence { // least -> greatest
   min = 1,
   word,
+  dollar_sub,
+  array_ref,
   quote,
   tcl_word,
   // command,
@@ -146,11 +148,15 @@ export const set_cmd = () =>
   );
 
 //  https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1383
-export const dollar_sub = () => seq("$", choice(brace_word, bare_word));
+export const dollar_sub = () =>
+  seq("$", choice(brace_word, bare_word, array_ref));
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1457
 
 export const array_ref = () =>
-  seq(field("array", bare_word), "(", field("index", optional(word)), ")");
+  prec(
+    precedence.array_ref,
+    seq(field("array", bare_word), "(", field("index", optional(word)), ")"),
+  );
 export const bracket_sub = () => seq("[", tcl_script, "]");
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L565, TclIsBareword
 // function name/identifier/bare variable name
@@ -160,7 +166,7 @@ export const quote_word = () =>
     precedence.max,
     seq('"', repeat(choice('\\"', dollar_sub, bracket_sub, /[^"]+/)), '"'),
   );
-export const brace_word = () => seq("{", choice(), "}");
+export const brace_word = () => seq("{", choice(brace_word, /[^\}]+/), "}");
 
 // TODO: parse backslash escapes; see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L782
 
@@ -176,7 +182,8 @@ export const word = () =>
       bracket_sub,
       dollar_sub,
       bare_word,
-      /[^\s;\[\]\{\}]+/,
+      array_ref,
+      /[^\s;\(\)\[\]\{\}]+/,
     ),
   );
 // TODO: indicate that bare_word has precedence over non-whitespace

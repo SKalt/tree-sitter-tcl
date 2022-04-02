@@ -24,7 +24,7 @@
             "type": "REPEAT",
             "content": {
               "type": "PREC_RIGHT",
-              "value": 10,
+              "value": 12,
               "content": {
                 "type": "SEQ",
                 "members": [
@@ -118,7 +118,7 @@
     },
     "_args": {
       "type": "PREC_LEFT",
-      "value": 8,
+      "value": 10,
       "content": {
         "type": "FIELD",
         "name": "args",
@@ -141,7 +141,7 @@
     },
     "_opts": {
       "type": "PREC_LEFT",
-      "value": 5,
+      "value": 7,
       "content": {
         "type": "FIELD",
         "name": "options",
@@ -172,7 +172,7 @@
     },
     "_patterns": {
       "type": "PREC_LEFT",
-      "value": 6,
+      "value": 8,
       "content": {
         "type": "FIELD",
         "name": "patterns",
@@ -732,41 +732,45 @@
       }
     },
     "array_ref": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "FIELD",
-          "name": "array",
-          "content": {
-            "type": "SYMBOL",
-            "name": "bare_word"
+      "type": "PREC",
+      "value": 4,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "FIELD",
+            "name": "array",
+            "content": {
+              "type": "SYMBOL",
+              "name": "bare_word"
+            }
+          },
+          {
+            "type": "STRING",
+            "value": "("
+          },
+          {
+            "type": "FIELD",
+            "name": "index",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "word"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            }
+          },
+          {
+            "type": "STRING",
+            "value": ")"
           }
-        },
-        {
-          "type": "STRING",
-          "value": "("
-        },
-        {
-          "type": "FIELD",
-          "name": "index",
-          "content": {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "word"
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
-          }
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
+        ]
+      }
     },
     "bare_word": {
       "type": "PATTERN",
@@ -781,7 +785,16 @@
         },
         {
           "type": "CHOICE",
-          "members": []
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "brace_word"
+            },
+            {
+              "type": "PATTERN",
+              "value": "[^\\}]+"
+            }
+          ]
         },
         {
           "type": "STRING",
@@ -812,7 +825,7 @@
     },
     "catch_cmd": {
       "type": "PREC_LEFT",
-      "value": 8,
+      "value": 10,
       "content": {
         "type": "SEQ",
         "members": [
@@ -990,7 +1003,7 @@
       "value": 1,
       "content": {
         "type": "PREC_LEFT",
-        "value": 8,
+        "value": 10,
         "content": {
           "type": "SEQ",
           "members": [
@@ -1174,6 +1187,10 @@
             {
               "type": "SYMBOL",
               "name": "bare_word"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "array_ref"
             }
           ]
         }
@@ -1639,10 +1656,10 @@
         },
         {
           "type": "PREC",
-          "value": 8,
+          "value": 10,
           "content": {
             "type": "PREC_LEFT",
-            "value": 8,
+            "value": 10,
             "content": {
               "type": "SEQ",
               "members": [
@@ -2293,7 +2310,7 @@
     },
     "proc_call_cmd": {
       "type": "PREC_RIGHT",
-      "value": 8,
+      "value": 10,
       "content": {
         "type": "REPEAT1",
         "content": {
@@ -2337,7 +2354,7 @@
     },
     "quote_word": {
       "type": "PREC_LEFT",
-      "value": 10,
+      "value": 12,
       "content": {
         "type": "SEQ",
         "members": [
@@ -2561,7 +2578,7 @@
         },
         {
           "type": "PREC",
-          "value": 5,
+          "value": 7,
           "content": {
             "type": "CHOICE",
             "members": [
@@ -2637,7 +2654,7 @@
     },
     "tcl_word": {
       "type": "PREC",
-      "value": 4,
+      "value": 6,
       "content": {
         "type": "CHOICE",
         "members": [
@@ -2924,8 +2941,12 @@
             "name": "bare_word"
           },
           {
+            "type": "SYMBOL",
+            "name": "array_ref"
+          },
+          {
             "type": "PATTERN",
-            "value": "[^\\s;\\[\\]\\{\\}]+"
+            "value": "[^\\s;\\(\\)\\[\\]\\{\\}]+"
           }
         ]
       }
