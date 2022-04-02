@@ -1,1 +1,59 @@
-see https://tree-sitter.github.io/tree-sitter/creating-parsers#command-test
+====
+basic assignment
+====
+set a 1
+
+---
+(tcl_script
+  (command
+    (set_cmd
+      (word (bare_word))
+      (word (bare_word)))))
+
+
+====
+set&get
+====
+set a 1
+set a
+
+---
+(tcl_script 
+  (command 
+    (set_cmd
+      (word (bare_word))
+      (word (bare_word))))
+  (command
+    (set_cmd
+      (word (bare_word)))))
+
+====
+terminating a command with a semicolon
+====
+set a;
+---
+(tcl_script
+  (command
+    (set_cmd
+      (word (bare_word)))))
+
+====
+braced var name
+====
+set {braced name} 27
+
+====
+scratch
+====
+set a b  c d  e f g
+----
+# (tcl_script
+#   (command
+#     (proc_call_cmd
+#       (word (bare_word))
+#       (word (bare_word))
+#       (word (bare_word))
+#       (word (bare_word))
+#       (word (bare_word))
+#       (word (bare_word))
+#       (word (bare_word)))))
