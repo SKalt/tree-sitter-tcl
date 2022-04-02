@@ -21,10 +21,10 @@
           "type": "PREC_RIGHT",
           "value": 1,
           "content": {
-            "type": "REPEAT1",
+            "type": "REPEAT",
             "content": {
               "type": "PREC_RIGHT",
-              "value": 9,
+              "value": 10,
               "content": {
                 "type": "SEQ",
                 "members": [
@@ -55,16 +55,8 @@
                             ]
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "_newline"
-                              },
-                              {
-                                "type": "BLANK"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_newline"
                           }
                         ]
                       }
@@ -74,12 +66,59 @@
               }
             }
           }
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "command"
+            },
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": ";"
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "comment"
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "_newline"
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     },
     "_args": {
       "type": "PREC_LEFT",
-      "value": 7,
+      "value": 8,
       "content": {
         "type": "FIELD",
         "name": "args",
@@ -102,7 +141,7 @@
     },
     "_opts": {
       "type": "PREC_LEFT",
-      "value": 4,
+      "value": 5,
       "content": {
         "type": "FIELD",
         "name": "options",
@@ -133,7 +172,7 @@
     },
     "_patterns": {
       "type": "PREC_LEFT",
-      "value": 5,
+      "value": 6,
       "content": {
         "type": "FIELD",
         "name": "patterns",
@@ -773,7 +812,7 @@
     },
     "catch_cmd": {
       "type": "PREC_LEFT",
-      "value": 7,
+      "value": 8,
       "content": {
         "type": "SEQ",
         "members": [
@@ -829,228 +868,116 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "PREC",
-          "value": 9,
-          "content": {
-            "type": "SYMBOL",
-            "name": "_escaped_newline"
-          }
+          "type": "SYMBOL",
+          "name": "_escaped_newline"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "after_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "after_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "apply_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "apply_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "array_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "array_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "break_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "break_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "catch_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "catch_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "concat_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "concat_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "dict_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "dict_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "error_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "error_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "expr_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "expr_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "for_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "for_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "foreach_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "foreach_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "global_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "global_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "if_cond_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "if_cond_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "incr_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "incr_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "lappend_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "lappend_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "list_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "list_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "lset_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "lset_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "namespace_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "namespace_cmd"
         },
         {
-          "type": "PREC",
-          "value": 6,
-          "content": {
-            "type": "SYMBOL",
-            "name": "proc_call_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "proc_call_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "proc_def_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "proc_def_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "rename_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "rename_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "return_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "return_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "set_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "set_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "switch_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "switch_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "try_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "try_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "unset_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "unset_cmd"
         },
         {
-          "type": "PREC",
-          "value": 8,
-          "content": {
-            "type": "SYMBOL",
-            "name": "while_cmd"
-          }
+          "type": "SYMBOL",
+          "name": "while_cmd"
         }
       ]
     },
@@ -1063,7 +990,7 @@
       "value": 1,
       "content": {
         "type": "PREC_LEFT",
-        "value": 7,
+        "value": 8,
         "content": {
           "type": "SEQ",
           "members": [
@@ -1712,10 +1639,10 @@
         },
         {
           "type": "PREC",
-          "value": 7,
+          "value": 8,
           "content": {
             "type": "PREC_LEFT",
-            "value": 7,
+            "value": 8,
             "content": {
               "type": "SEQ",
               "members": [
@@ -2366,34 +2293,13 @@
     },
     "proc_call_cmd": {
       "type": "PREC_RIGHT",
-      "value": 0,
+      "value": 8,
       "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "FIELD",
-            "name": "name",
-            "content": {
-              "type": "SYMBOL",
-              "name": "word"
-            }
-          },
-          {
-            "type": "FIELD",
-            "name": "args",
-            "content": {
-              "type": "PREC_RIGHT",
-              "value": 7,
-              "content": {
-                "type": "REPEAT",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "word"
-                }
-              }
-            }
-          }
-        ]
+        "type": "REPEAT1",
+        "content": {
+          "type": "SYMBOL",
+          "name": "word"
+        }
       }
     },
     "proc_def_cmd": {
@@ -2431,7 +2337,7 @@
     },
     "quote_word": {
       "type": "PREC_LEFT",
-      "value": 9,
+      "value": 10,
       "content": {
         "type": "SEQ",
         "members": [
@@ -2655,7 +2561,7 @@
         },
         {
           "type": "PREC",
-          "value": 4,
+          "value": 5,
           "content": {
             "type": "CHOICE",
             "members": [
@@ -2731,7 +2637,7 @@
     },
     "tcl_word": {
       "type": "PREC",
-      "value": 3,
+      "value": 4,
       "content": {
         "type": "CHOICE",
         "members": [
@@ -2746,8 +2652,17 @@
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "SYMBOL",
-                    "name": "tcl_script"
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "tcl_script"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "command"
+                      }
+                    ]
                   },
                   {
                     "type": "BLANK"

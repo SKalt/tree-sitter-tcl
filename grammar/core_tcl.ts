@@ -33,7 +33,9 @@ export const _patterns = () =>
 const enum precedence { // least -> greatest
   min = 1,
   word,
+  quote,
   tcl_word,
+  // command,
   _opts,
   _patterns,
   proc_call,
@@ -86,51 +88,54 @@ export const tcl_script = () =>
     optional(_padding),
     prec.right(
       precedence.min,
-      repeat1(
+      repeat(
         prec.right(
           precedence.max,
-          seq(command, choice(";", seq(optional(comment), optional(_newline)))),
+          seq(command, choice(";", seq(optional(comment), _newline))),
         ),
       ),
     ),
+    seq(command, choice(";", seq(optional(comment), optional(_newline)))),
   );
 export const integer = () => /\d+/;
 export const float = () => seq(integer, ".", integer);
 
 // TODO: all the grammar constructs
 export const command = () =>
+  // prec(
+  // precedence.command,
   choice(
-    prec(precedence.max, _escaped_newline),
+    _escaped_newline,
 
-    prec(precedence.named_cmd, after_cmd),
-    prec(precedence.named_cmd, apply_cmd),
-    prec(precedence.named_cmd, array_cmd),
-    prec(precedence.named_cmd, break_cmd),
-    prec(precedence.named_cmd, catch_cmd),
-    prec(precedence.named_cmd, concat_cmd),
-    prec(precedence.named_cmd, dict_cmd), // TODO
-    prec(precedence.named_cmd, error_cmd),
-    prec(precedence.named_cmd, expr_cmd),
-    prec(precedence.named_cmd, for_cmd),
-    prec(precedence.named_cmd, foreach_cmd),
-    prec(precedence.named_cmd, global_cmd),
-    prec(precedence.named_cmd, if_cond_cmd),
-    prec(precedence.named_cmd, incr_cmd),
-    prec(precedence.named_cmd, lappend_cmd),
-    prec(precedence.named_cmd, list_cmd),
-    prec(precedence.named_cmd, lset_cmd),
-    prec(precedence.named_cmd, namespace_cmd),
+    after_cmd,
+    apply_cmd,
+    array_cmd,
+    break_cmd,
+    catch_cmd,
+    concat_cmd,
+    dict_cmd, // TODO
+    error_cmd,
+    expr_cmd,
+    for_cmd,
+    foreach_cmd,
+    global_cmd,
+    if_cond_cmd,
+    incr_cmd,
+    lappend_cmd,
+    list_cmd,
+    lset_cmd,
+    namespace_cmd,
 
-    prec(precedence.proc_call, proc_call_cmd),
-
-    prec(precedence.named_cmd, proc_def_cmd),
-    prec(precedence.named_cmd, rename_cmd),
-    prec(precedence.named_cmd, return_cmd),
-    prec(precedence.named_cmd, set_cmd),
-    prec(precedence.named_cmd, switch_cmd),
-    prec(precedence.named_cmd, try_cmd),
-    prec(precedence.named_cmd, unset_cmd),
-    prec(precedence.named_cmd, while_cmd),
+    proc_call_cmd,
+    proc_def_cmd,
+    rename_cmd,
+    return_cmd,
+    set_cmd,
+    switch_cmd,
+    try_cmd,
+    unset_cmd,
+    while_cmd,
+    // ),
   );
 
 // https://tcl.tk/man/tcl8.7/TclCmd/set.html
@@ -181,7 +186,7 @@ export const tcl_word = () =>
   prec(
     precedence.tcl_word,
     choice(
-      seq("{", optional(tcl_script), "}"),
+      seq("{", optional(choice(tcl_script, command)), "}"),
       seq('"', optional(tcl_script), '"'), // TODO: handle escaped-character trickiness
       dollar_sub, // can't be re-parsed, but still valid here
       bracket_sub, // can't be re-parsed, but still valid here
@@ -195,14 +200,7 @@ export const tcl_word = () =>
 const default_cmd = (cmd: RuleOrLiteral = word) =>
   prec.left(precedence._args, seq(cmd, optional(_args)));
 
-export const proc_call_cmd = () =>
-  prec.right(
-    0,
-    seq(
-      field("name", word),
-      field("args", prec.right(precedence._args, repeat(word))),
-    ),
-  );
+export const proc_call_cmd = () => prec.right(precedence._args, repeat1(word));
 
 /**https://tcl.tk/man/tcl8.7/TclCmd/array.html */
 export const array_cmd = () =>

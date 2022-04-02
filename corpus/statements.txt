@@ -45,15 +45,22 @@ set {braced name} 27
 ====
 scratch
 ====
-set a b  c d  e f g
+catch {a b c d e f g} asdf
 ----
-# (tcl_script
-#   (command
-#     (proc_call_cmd
-#       (word (bare_word))
-#       (word (bare_word))
-#       (word (bare_word))
-#       (word (bare_word))
-#       (word (bare_word))
-#       (word (bare_word))
-#       (word (bare_word)))))
+(tcl_script
+  (command
+    (tcl_script
+      (catch_cmd
+        (word (bare_word))
+        (tcl_word
+        (command
+          (proc_call_cmd
+            (word (bare_word))
+            (word (bare_word))
+            (word (bare_word))
+            (word (bare_word))
+            (word (bare_word))
+            (word (bare_word))
+            (word (bare_word)))))
+        (word (bare_word))
+        ))))
