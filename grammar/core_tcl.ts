@@ -33,11 +33,13 @@ export const _patterns = () =>
 const enum precedence { // least -> greatest
   min = 1,
   word,
+  bare_word,
+  integer,
+  float,
   dollar_sub,
   array_ref,
   quote,
   tcl_word,
-  // command,
   _opts,
   _patterns,
   proc_call,
@@ -99,8 +101,16 @@ export const tcl_script = () =>
     ),
     seq(command, choice(";", seq(optional(comment), optional(_newline)))),
   );
-export const integer = () => /\d+/;
-export const float = () => seq(integer, ".", integer);
+export const integer = () => prec.dynamic(precedence.integer, /\d+/);
+export const float = () =>
+  prec.dynamic(
+    precedence.float,
+    prec.right(
+      // /\d+\.\d*/, /\d*\.\d+/
+      precedence.float,
+      seq(optional(integer), token.immediate("."), integer),
+    ),
+  );
 
 // TODO: all the grammar constructs
 export const command = () =>
@@ -149,7 +159,10 @@ export const set_cmd = () =>
 
 //  https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1383
 export const dollar_sub = () =>
-  seq("$", choice(brace_word, bare_word, array_ref));
+  prec(
+    precedence.dollar_sub,
+    seq("$", choice(brace_word, bare_word, array_ref)),
+  );
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1457
 
 export const array_ref = () =>
@@ -160,7 +173,8 @@ export const array_ref = () =>
 export const bracket_sub = () => seq("[", tcl_script, "]");
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L565, TclIsBareword
 // function name/identifier/bare variable name
-export const bare_word = () => /[a-zA-Z0-9_]+/;
+export const bare_word = () =>
+  prec.dynamic(precedence.bare_word, /[a-zA-Z0-9_]+/);
 export const quote_word = () =>
   prec.left(
     precedence.max,
@@ -173,6 +187,7 @@ export const brace_word = () => seq("{", choice(brace_word, /[^\}]+/), "}");
 // see https://github.com/tcltk/tcl/blob/main/library/word.tcl
 // see https://github.com/tcltk/tcl/blob/main/generic/regc_lex.c
 export const comment = () => /\s*#.*/;
+export const other_word = () => prec(precedence.min, /[^\s;\(\)\[\]\{\}\$"]+/);
 export const word = () =>
   prec(
     precedence.word,
@@ -181,9 +196,12 @@ export const word = () =>
       brace_word,
       bracket_sub,
       dollar_sub,
-      bare_word,
       array_ref,
-      /[^\s;\(\)\[\]\{\}]+/,
+
+      float,
+      integer,
+      bare_word,
+      other_word,
     ),
   );
 // TODO: indicate that bare_word has precedence over non-whitespace

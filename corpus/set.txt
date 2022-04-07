@@ -20,7 +20,7 @@ list [catch {set} msg] $msg
               (catch_cmd
                 (tcl_word (ERROR))
                 (word (bare_word)))))))
-      (word))))
+      (word (dollar_sub (bare_word))))))
 
 =======
 set-1.2: TclCompileSetCmd: simple variable name
@@ -34,7 +34,7 @@ list [set i] $i
       (word
         (bare_word))
       (word
-        (bare_word))))
+        (integer))))
   (command
     (list_cmd
       (word
@@ -44,7 +44,7 @@ list [set i] $i
               (set_cmd
                 (word
                   (bare_word)))))))
-      (word))))
+      (word (dollar_sub (bare_word))))))
 
 =======
 set-1.3: TclCompileSetCmd: error compiling variable name
@@ -64,8 +64,7 @@ set msg
     (catch_cmd
       (tcl_word
         (command
-          (set_cmd
-            (word))))
+          (set_cmd (ERROR))))
       (word
         (bare_word))))
   (command
@@ -92,8 +91,8 @@ list [set "i"] $i
           (tcl_script
             (command
               (set_cmd
-                (word))))))
-      (word))))
+                (word (quote_word)))))))
+      (word (dollar_sub (bare_word))))))
 
 =======
 set-1.5: TclCompileSetCmd: simple variable name in braces
@@ -150,4 +149,9 @@ list [set a(foo)] $a(foo)
                     (bare_word)
                     (word
                       (bare_word)))))))))
-      (word))))
+      (word
+        (dollar_sub
+          (array_ref
+            (bare_word)
+            (word
+              (bare_word))))))))
