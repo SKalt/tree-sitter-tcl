@@ -8,7 +8,7 @@ set a 1
   (command
     (set_cmd
       (word (bare_word))
-      (word (bare_word)))))
+      (word (integer)))))
 
 
 ====
@@ -22,7 +22,7 @@ set a
   (command 
     (set_cmd
       (word (bare_word))
-      (word (bare_word))))
+      (word (integer))))
   (command
     (set_cmd
       (word (bare_word)))))
@@ -45,10 +45,9 @@ set {braced name} 27
 ====
 scratch integer
 ====
-set i 123
+set a 1
 ----
 (tcl_script
   (command
-    (set_cmd
-      (word (bare_word))
-      (word (integer)))))
+    (set_cmd (word (bare_word)) (word (integer))))
+)

@@ -773,42 +773,37 @@
       }
     },
     "bare_word": {
-      "type": "PREC_DYNAMIC",
-      "value": 3,
+      "type": "TOKEN",
       "content": {
         "type": "PATTERN",
         "value": "[a-zA-Z0-9_]+"
       }
     },
     "brace_word": {
-      "type": "PREC",
-      "value": 1,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "STRING",
-            "value": "{"
-          },
-          {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "brace_word"
-              },
-              {
-                "type": "PATTERN",
-                "value": "[^\\}]+"
-              }
-            ]
-          },
-          {
-            "type": "STRING",
-            "value": "}"
-          }
-        ]
-      }
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "brace_word"
+            },
+            {
+              "type": "PATTERN",
+              "value": "[^\\}]+"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
     },
     "bracket_sub": {
       "type": "SEQ",
@@ -1392,36 +1387,20 @@
       }
     },
     "float": {
-      "type": "PREC_DYNAMIC",
-      "value": 5,
+      "type": "TOKEN",
       "content": {
-        "type": "PREC_RIGHT",
+        "type": "PREC",
         "value": 5,
         "content": {
-          "type": "SEQ",
+          "type": "CHOICE",
           "members": [
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "integer"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
+              "type": "PATTERN",
+              "value": "\\d+\\.\\d*"
             },
             {
-              "type": "IMMEDIATE_TOKEN",
-              "content": {
-                "type": "STRING",
-                "value": "."
-              }
-            },
-            {
-              "type": "SYMBOL",
-              "name": "integer"
+              "type": "PATTERN",
+              "value": "\\.\\d+"
             }
           ]
         }
@@ -1617,11 +1596,14 @@
       }
     },
     "integer": {
-      "type": "PREC_DYNAMIC",
-      "value": 4,
+      "type": "TOKEN",
       "content": {
-        "type": "PATTERN",
-        "value": "\\d+"
+        "type": "PREC",
+        "value": 4,
+        "content": {
+          "type": "PATTERN",
+          "value": "\\d+"
+        }
       }
     },
     "lappend_cmd": {
@@ -2353,7 +2335,7 @@
     },
     "proc_call_cmd": {
       "type": "PREC_RIGHT",
-      "value": 13,
+      "value": 1,
       "content": {
         "type": "REPEAT1",
         "content": {
@@ -2578,8 +2560,15 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "STRING",
-            "value": "set"
+            "type": "TOKEN",
+            "content": {
+              "type": "PREC",
+              "value": 15,
+              "content": {
+                "type": "STRING",
+                "value": "set"
+              }
+            }
           },
           {
             "type": "FIELD",
@@ -2958,45 +2947,49 @@
       ]
     },
     "word": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "quote_word"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "brace_word"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "bracket_sub"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "dollar_sub"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "array_ref"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "float"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "integer"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "bare_word"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "other_word"
-        }
-      ]
+      "type": "PREC",
+      "value": 2,
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "quote_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "brace_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "bracket_sub"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "dollar_sub"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "array_ref"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "float"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "integer"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "bare_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "other_word"
+          }
+        ]
+      }
     }
   },
   "inline": [],
@@ -3010,11 +3003,6 @@
     [
       "tcl_word",
       "word"
-    ],
-    [
-      "integer",
-      "bare_word",
-      "other_word"
     ]
   ],
   "supertypes": []

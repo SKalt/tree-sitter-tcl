@@ -31,10 +31,8 @@ list [set i] $i
 (tcl_script
   (command
     (set_cmd
-      (word
-        (bare_word))
-      (word
-        (integer))))
+      (word (bare_word))
+      (word (integer))))
   (command
     (list_cmd
       (word
@@ -59,18 +57,21 @@ set msg
       (word
         (bare_word))
       (word
-        (bare_word))))
+        (integer))))
   (command
     (catch_cmd
       (tcl_word
         (command
-          (set_cmd (ERROR))))
+          (set_cmd
+            (word (quote_word))
+            (word (bare_word)))))
       (word
         (bare_word))))
   (command
     (set_cmd
       (word
         (bare_word)))))
+
 =======
 set-1.4: TclCompileSetCmd: simple variable name in quotes
 =======
@@ -83,7 +84,7 @@ list [set "i"] $i
       (word
         (bare_word))
       (word
-        (bare_word))))
+        (integer))))
   (command
     (list_cmd
       (word
@@ -106,7 +107,7 @@ list [set {a simple var}] ${a simple var}
       (word
         (brace_word))
       (word
-        (bare_word))))
+        (integer))))
   (command
     (list_cmd
       (word
@@ -136,7 +137,7 @@ list [set a(foo)] $a(foo)
           (word
             (bare_word))))
       (word
-        (bare_word))))
+        (integer))))
   (command
     (list_cmd
       (word

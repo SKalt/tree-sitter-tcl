@@ -10,6 +10,6 @@ export default grammar({
   },
   conflicts: [
     ["tcl_word", "word"],
-    ["integer", "bare_word", "other_word"],
+    // ["integer", "bare_word", "other_word"],
   ],
 });
