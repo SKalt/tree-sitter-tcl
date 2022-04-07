@@ -9,7 +9,7 @@ export default grammar({
     ...others,
   },
   conflicts: [
-    ["tcl_word", "word"],
+    ["tcl_word", "_word"],
     // ["integer", "bare_word", "other_word"],
   ],
 });

@@ -7,8 +7,8 @@ set a 1
 (tcl_script
   (command
     (set_cmd
-      (word (bare_word))
-      (word (integer)))))
+      (bare_word)
+      (integer))))
 
 
 ====
@@ -21,11 +21,11 @@ set a
 (tcl_script 
   (command 
     (set_cmd
-      (word (bare_word))
-      (word (integer))))
+      (bare_word)
+      (integer)))
   (command
     (set_cmd
-      (word (bare_word)))))
+      (bare_word))))
 
 ====
 terminating a command with a semicolon
@@ -35,7 +35,7 @@ set a;
 (tcl_script
   (command
     (set_cmd
-      (word (bare_word)))))
+      (bare_word))))
 
 ====
 braced var name
@@ -49,5 +49,4 @@ set a 1
 ----
 (tcl_script
   (command
-    (set_cmd (word (bare_word)) (word (integer))))
-)
+    (set_cmd (bare_word) (integer))))
