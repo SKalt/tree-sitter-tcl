@@ -2,7 +2,6 @@
 basic assignment
 ====
 set a 1
-
 ---
 (tcl_script
   (command
@@ -42,11 +41,3 @@ braced var name
 ====
 set {braced name} 27
 
-====
-scratch integer
-====
-set a 1
-----
-(tcl_script
-  (command
-    (set_cmd (bare_word) (integer))))

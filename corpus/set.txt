@@ -8,7 +8,6 @@
 set-1.1: TclCompileSetCmd: missing variable name
 ======
 list [catch {set} msg] $msg
-
 -------
 (tcl_script
   (command
@@ -315,3 +314,49 @@ set-1.13: TclCompileSetCmd: simple but new (unknown) local name
       (command
         (set_cmd
           (bare_word))))
+
+=======
+set-1.15: TclCompileSetCmd: variable is array
+=======
+    set x 27
+    set x [set a(foo) 11]
+    catch {unset a}
+    set x
+-------
+    (tcl_script
+      (command
+        (set_cmd
+          (bare_word)
+          (integer)))
+      (command
+        (set_cmd
+          (bare_word)
+          (bracket_sub
+            (tcl_script
+              (command
+                (set_cmd
+                  (array_ref
+                    (bare_word)
+                    (bare_word))
+                  (integer)))))))
+      (command
+        (catch_cmd
+          (tcl_word
+            (command
+              (unset_cmd
+                (bare_word))))))
+      (command
+        (set_cmd
+          (bare_word))))
+
+
+=======
+set-1.16: TclCompileSetCmd: variable is array, elem substitutions
+=======
+    set i 5
+    set x 789
+    set a(foo5) 27
+    set x [set a(foo$i)]
+    catch {unset a}
+    set x
+-------
