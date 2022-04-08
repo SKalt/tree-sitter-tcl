@@ -835,12 +835,20 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "brace_word"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "brace_word"
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[^\\{\\}]+"
+                }
+              ]
             },
             {
-              "type": "PATTERN",
-              "value": "[^\\}]+"
+              "type": "BLANK"
             }
           ]
         },

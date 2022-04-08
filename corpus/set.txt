@@ -131,3 +131,127 @@ list [set a(foo)] $a(foo)
         (array_ref
           (bare_word)
           (bare_word))))))
+=======
+set-1.7: TclCompileSetCmd: non-simple (computed) variable name
+=======
+set x "i"
+set i 77
+list [set $x] $i
+-------
+(tcl_script
+  (command
+    (set_cmd
+      (bare_word)
+      (quote_word)))
+  (command
+    (set_cmd
+      (bare_word)
+      (integer)))
+  (command
+    (list_cmd
+      (bracket_sub
+        (tcl_script
+          (command
+            (set_cmd
+              (dollar_sub
+                (bare_word))))))
+      (dollar_sub
+        (bare_word)))))
+
+=======
+set-1.8: TclCompileSetCmd: non-simple (computed) variable name
+=======
+set x "i"
+set i 77
+list [set [set x] 2] $i
+----
+(tcl_script
+  (command
+    (set_cmd
+      (bare_word)
+      (quote_word)))
+  (command
+    (set_cmd
+      (bare_word)
+      (integer)))
+  (command
+    (list_cmd
+      (bracket_sub
+        (tcl_script
+          (command
+            (set_cmd
+              (bracket_sub
+                (tcl_script
+                  (command
+                    (set_cmd
+                      (bare_word)))))
+              (integer)))))
+      (dollar_sub
+        (bare_word)))))
+
+=======
+set-1.9: TclCompileSetCmd: 3rd arg => assignment
+=======
+    set i "abcdef"
+    list [set i] $i
+------
+    (tcl_script
+      (command
+        (set_cmd
+          (bare_word)
+          (quote_word)))
+      (command
+        (list_cmd
+          (bracket_sub
+            (tcl_script
+              (command
+                (set_cmd
+                  (bare_word)))))
+          (dollar_sub
+            (bare_word)))))
+=======
+set-1.10: TclCompileSetCmd: only two args => just getting value
+=======
+    set i {one two}
+    set i
+-------
+    (tcl_script
+      (command
+        (set_cmd
+          (bare_word)
+          (brace_word)))
+      (command
+        (set_cmd
+          (bare_word))))
+
+
+=======
+set-1.11: TclCompileSetCmd: simple global name
+=======
+    proc p {} {
+        global i
+        set i 54
+        set i
+    }
+    p
+-------
+    (tcl_script
+      (command
+        (proc_def_cmd
+          (bare_word)
+          (brace_word)
+          (tcl_word
+            (tcl_script
+              (command
+                (global_cmd
+                  (bare_word)))
+              (command
+                (set_cmd
+                  (bare_word)
+                  (integer)))
+              (command
+                (set_cmd
+                  (bare_word)))))))
+      (command
+        (proc_call_cmd
+          (bare_word))))

@@ -176,7 +176,8 @@ export const quote_word = () =>
     precedence.max,
     seq('"', repeat(choice('\\"', dollar_sub, bracket_sub, /[^"]+/)), '"'),
   );
-export const brace_word = () => seq("{", choice(brace_word, /[^\}]+/), "}");
+export const brace_word = () =>
+  seq("{", optional(choice(brace_word, /[^\{\}]+/)), "}");
 
 // TODO: parse backslash escapes; see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L782
 
@@ -425,6 +426,7 @@ export const if_cond_cmd = () =>
 /** https://tcl.tk/man/tcl8.7/TclCmd/while.html */
 export const while_cmd = () => seq(keyword.while, conditional_test(), _body());
 
+/** https://tcl.tk/man/tcl8.7/TclCmd/proc.html */
 export const proc_def_cmd = () =>
   seq(keyword.proc, field("name", bare_word), field("args", _word), _body());
 // TODO: info : https://tcl.tk/man/tcl8.7/TclCmd/info.html
