@@ -9,5 +9,5 @@ export default grammar({
     ...others,
   },
   conflicts: [["tcl_word", "_word"]],
-  extras: ["\0"], // control whitespace explicitly
+  extras: [], // control whitespace explicitly
 });
