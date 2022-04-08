@@ -255,3 +255,63 @@ set-1.11: TclCompileSetCmd: simple global name
       (command
         (proc_call_cmd
           (bare_word))))
+
+=======
+set-1.12: TclCompileSetCmd: simple local name
+=======
+
+    proc p {bar} {
+        set foo $bar
+        set foo
+    }
+    p 999
+-------
+    (tcl_script
+      (command
+        (proc_def_cmd
+          (bare_word)
+          (brace_word)
+          (tcl_word
+            (tcl_script
+              (command
+                (set_cmd
+                  (bare_word)
+                  (dollar_sub
+                    (bare_word))))
+              (command
+                (set_cmd
+                  (bare_word)))))))
+      (command
+        (proc_call_cmd
+          (bare_word)
+          (integer))))
+
+=======
+set-1.13: TclCompileSetCmd: simple but new (unknown) local name
+=======
+    proc p {} {
+        set bar
+    }
+    catch {p} msg
+    set msg
+---------
+    (tcl_script
+      (command
+        (proc_def_cmd
+          (bare_word)
+          (brace_word)
+          (tcl_word
+            (tcl_script
+              (command
+                (set_cmd
+                  (bare_word)))))))
+      (command
+        (catch_cmd
+          (tcl_word
+            (command
+              (proc_call_cmd
+                (bare_word))))
+          (bare_word)))
+      (command
+        (set_cmd
+          (bare_word))))
