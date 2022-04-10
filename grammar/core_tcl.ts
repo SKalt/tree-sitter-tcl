@@ -20,11 +20,12 @@ const variable_del = () => field("variable_del", _word);
 const conditional_test = () => field("test", tcl_word);
 const _body = () => field("body", tcl_word);
 
-export const _words = () => repeat1(__word);
-export const _args = () => prec.left(precedence._args, field("args", _words));
+export const _opts = () =>
+  prec.left(precedence._opts, field("options", repeat1(_word)));
+export const _args = () =>
+  prec.left(precedence._args, field("args", repeat1(_word)));
 export const _patterns = () =>
-  // TODO: refine pattern
-  prec.left(precedence._patterns, field("patterns", _words));
+  prec.left(precedence._patterns, field("patterns", repeat1(_word)));
 
 const enum precedence { // least -> greatest
   min = 1,
@@ -82,37 +83,31 @@ export const op = () =>
 // https://tcl.tk/about/language.html ----------------------------------------------------
 // Tcl scripts are made up of commands separated by newlines or semicolons.
 export const _escaped_newline = () => /\\\r?\n/; // TODO: ensure escaped newlines take precedence over newlines
-export const newline = () => /(\r?\n)+/;
-export const _padding = () => repeat1(choice(newline, comment, wh));
-export const c1 = () => 
+export const _newline = () => /(\r?\n)+/;
+export const _padding = () => repeat1(choice(_newline, comment));
+export const tcl_script = () =>
   seq(
     optional(_padding),
-    command,
-    optional(wh),
-    choice(";", seq(optional(comment), newline)),
-  
-)
-export const c2 = () => prec.right(precedence.max,seq(
-  optional(_padding),
-  command,
-  optional(wh),
-  ";"
-  //choice(";", seq(optional(comment), optional(newline))),
-))
-export const tcl_script = () =>
-  prec.right(
-    precedence.min,
-    seq(
-      repeat(c1),
-      c2,
-      optional(_padding),
+    prec.right(
+      precedence.min,
+      repeat(
+        prec.right(
+          precedence.max,
+          seq(command, choice(";", seq(optional(comment), _newline))),
+        ),
+      ),
     ),
+    seq(command, choice(";", seq(optional(comment), optional(_newline)))),
   );
 export const integer = () => token(prec(precedence.integer, /\d+/));
 export const float = () =>
   token(prec(precedence.float, choice(/\d+\.\d*/, /\.\d+/)));
+// export const temp_test_cmd = () =>
+//   seq("temp", choice(bare_word, integer, float, other_word));
 
 export const command = () =>
+  // prec(
+  // precedence.command,
   choice(
     _escaped_newline,
 
@@ -144,6 +139,8 @@ export const command = () =>
     try_cmd,
     unset_cmd,
     while_cmd,
+    // temp_test_cmd,
+    // ),
   );
 
 // https://tcl.tk/man/tcl8.7/TclCmd/set.html
@@ -151,10 +148,9 @@ export const set_cmd = () =>
   prec.right(
     precedence.min,
     seq(
-      "set",
-      wh,
+      token(prec(precedence.max, "set")),
       field("variable", _word),
-      optional(seq(wh, optional(field("value", _word)))),
+      optional(field("value", _word)),
     ),
   );
 
@@ -163,21 +159,13 @@ export const dollar_sub = () =>
   prec(
     precedence.dollar_sub,
     seq("$", choice(brace_word, bare_word, array_ref)),
-    // TODO: ensure no whitespace between $ and next token
   );
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1457
-
-export const wh = () => /[\t ]/;
 
 export const array_ref = () =>
   prec(
     precedence.array_ref,
-    seq(
-      field("array", bare_word),
-      token.immediate("("),
-      field("index", optional(_word)),
-      token.immediate(")"),
-    ),
+    seq(field("array", bare_word), "(", field("index", optional(_word)), ")"),
   );
 export const bracket_sub = () => seq("[", tcl_script, "]");
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L565, TclIsBareword
@@ -195,10 +183,10 @@ export const brace_word = () =>
 
 // see https://github.com/tcltk/tcl/blob/main/library/word.tcl
 // see https://github.com/tcltk/tcl/blob/main/generic/regc_lex.c
-export const comment = () => /#[^\n]*/;
+export const comment = () => /\s*#.*/;
 export const other_word = () => prec(precedence.min, /[^\s;\(\)\[\]\{\}\$"]+/);
 export const _word = () =>
-  prec.right(
+  prec(
     precedence.word,
     choice(
       quote_word,
@@ -206,8 +194,6 @@ export const _word = () =>
       bracket_sub,
       dollar_sub,
       array_ref,
-      // seq(_word, token.immediate(float, integer, bare_word))),
-      // seq(choice(bare_word, float, integer)), // compound word
 
       float,
       integer,
@@ -215,10 +201,9 @@ export const _word = () =>
       other_word,
     ),
   );
-const __word = seq(wh, _word);
-const _opt_word = optional(__word);
+// TODO: indicate that bare_word has precedence over non-whitespace
 
-const _pair = seq(__word, __word);
+// TODO: recursive parsing
 export const tcl_word = () =>
   prec(
     precedence.tcl_word,
@@ -229,17 +214,15 @@ export const tcl_word = () =>
       bracket_sub, // can't be re-parsed, but still valid here
     ),
   );
-const __tcl_word = seq(wh, tcl_word);
 
 // commands --------------------------------------------------------------------
 // include here any core language commands which cover iteration, namespacing, or assignment
 
 // export const list_literal = () => choice();
 const default_cmd = (cmd: RuleOrLiteral = _word) =>
-  prec.right(precedence._args, seq(cmd, optional(wh), optional(_args)));
+  prec.left(precedence._args, seq(cmd, optional(_args)));
 
-export const proc_call_cmd = () => default_cmd();
-// prec.right(precedence.min, seq(_word, _words));
+export const proc_call_cmd = () => prec.right(precedence.min, repeat1(_word));
 
 /**https://tcl.tk/man/tcl8.7/TclCmd/array.html */
 export const array_cmd = () =>
@@ -251,45 +234,39 @@ export const array_cmd = () =>
         seq("anymore", variable_ref(), field("search_id", _word)),
         seq(
           "default",
-          wh,
           choice(
-            seq(choice("get", "unset", "exists"), wh, variable_ref()),
-            seq("set", wh, variable_ref(), __word), // TODO: mark the default
+            seq("exists", variable_ref()),
+            seq("get", variable_ref()),
+            seq("set", variable_ref(), _word), // TODO: mark the default
+            seq("unset", variable_ref()),
           ),
         ),
-        seq("donesearch", wh, variable_ref()),
-        seq("exists", wh, variable_ref()),
+        seq("donesearch", variable_ref()),
+        seq("exists", variable_ref()),
         seq(
           "for",
-          wh,
           "{",
           field("key", bare_word),
-          wh,
           field("value", bare_word),
-          wh,
           "}",
-          wh,
           variable_ref(),
-          wh,
           tcl_word,
         ),
-        seq("get", wh, variable_ref(), _opt_word),
+        seq("get", variable_ref(), optional(_word)),
         seq(
           "names",
-          wh,
           variable_ref(),
-          wh,
-          _opt_word /*mode*/,
-          _opt_word /*pattern*/,
+          optional(_word /*mode*/),
+          optional(_word /*pattern*/),
         ),
-        seq("nextelement", wh, variable_ref(), __word /* search id */),
-        seq("set", wh, variable_def(), __word),
-        seq("unset", wh, variable_del(), _opt_word),
-      ),
+        seq("nextelement", variable_ref(), _word /* search id */),
+        seq("set", variable_def(), _word),
+        seq("unset", variable_del(), optional(_word)),
 
-      seq("size", wh, variable_ref()),
-      seq("startsearch", wh, variable_ref()),
-      seq("statistics", wh, variable_ref()),
+        seq("size", variable_ref()),
+        seq("startsearch", variable_ref()),
+        seq("statistics", variable_ref()),
+      ),
     ),
   );
 
@@ -301,35 +278,34 @@ export const continue_cmd = () => "continue";
 export const for_cmd = () =>
   seq(
     "for",
-    wh,
     field("start", tcl_word),
-    wh,
     field("test", tcl_word),
-    wh,
     field("next", tcl_word),
-    wh,
     field("body", tcl_word),
   );
 /* https://tcl.tk/man/tcl8.7/TclCmd/foreach.html */
-export const foreach_cmd = () => seq("foreach", repeat(_pair), __tcl_word);
+export const foreach_cmd = () =>
+  seq("foreach", repeat(seq(_word, _word)), tcl_word);
 /** https://tcl.tk/man/tcl8.7/TclCmd/list.html */
 export const list_cmd = () =>
-  choice("list", prec.left(precedence._args, seq("list", _args)));
+  choice(
+    "list",
+    prec(precedence._args, prec.left(precedence._args, seq("list", _args))),
+  );
 /** https://tcl.tk/man/tcl8.7/TclCmd/concat.html */
 export const concat_cmd = () =>
   prec.left(precedence.min, default_cmd("concat"));
 
+// TODO: list?
+// TODO: proc
 /** https://tcl.tk/man/tcl8.7/TclCmd/error.html */
 export const error_cmd = () =>
   prec.right(
     precedence.min,
     seq(
       "error",
-      wh,
       field("message", _word),
-      optional(
-        seq(wh, field("info", _word), optional(seq(wh, field("code", _word)))),
-      ),
+      optional(seq(field("info", optional(_word)), field("code", _word))),
     ),
   );
 
@@ -339,12 +315,11 @@ export const catch_cmd = () =>
     precedence._args,
     seq(
       "catch",
-      __tcl_word,
+      tcl_word,
       optional(
         seq(
-          wh,
           field("result_variable", _word),
-          field("options_variable", optional(seq(__word))),
+          field("options_variable", optional(_word)),
         ),
       ),
     ),
@@ -352,7 +327,7 @@ export const catch_cmd = () =>
 
 /** https://tcl.tk/man/tcl8.7/TclCmd/apply.html  */
 export const apply_cmd = () =>
-  seq("apply", wh, field("func", tcl_word), wh, field("args", _word)); // TODO: specify that args should be a list
+  seq("apply", field("func", tcl_word), field("args", _word)); // TODO: specify that args should be a list
 
 /** https://tcl.tk/man/tcl8.7/TclCmd/after.html */
 export const after_cmd = () =>
@@ -360,18 +335,16 @@ export const after_cmd = () =>
     precedence.min,
     seq(
       "after",
-      wh,
       choice(
         // in order of precedence
-        prec.left(2, seq(field("delay_ms", integer), repeat(__tcl_word))),
+        prec.left(2, seq(field("delay_ms", integer), repeat(tcl_word))),
         seq(
           "cancel",
-          wh,
           prec.left(1, choice(field("id", _word))),
-          repeat1(__tcl_word),
+          repeat1(tcl_word),
         ),
-        seq("idle", repeat1(__tcl_word)),
-        seq("info", wh, field("id", optional(_word))),
+        seq("idle", repeat1(tcl_word)),
+        seq("info", choice(field("id", optional(_word)))),
       ),
     ),
   );
@@ -384,34 +357,30 @@ export const return_cmd = () =>
       "return",
       repeat(
         // the options
-        seq(
-          wh,
-          choice(
-            seq(
-              "-code",
-              wh,
-              choice(
-                choice("ok", "error", "return", "break", "continue"),
-                choice("0", "1", "2", "3", "4"),
-              ),
+        choice(
+          seq(
+            "-code",
+            choice(
+              choice("ok", "error", "return", "break", "continue"),
+              choice("0", "1", "2", "3", "4"),
             ),
-            seq(_pair), // an option `-name value` pair, generously
           ),
+          seq(_word, _word), // an option-name, option-value pair, generously
         ),
       ),
-      optional(__word), // result
+      optional(_word), // result
     ),
   );
 
 /** https://tcl.tk/man/tcl8.7/TclCmd/rename.html */
 export const rename_cmd = () =>
-  seq("rename", wh, variable_ref(), wh, variable_def());
+  seq("rename", field("variable_ref", _word), field("variable_def", _word));
 
 // https://tcl.tk/man/tcl8.7/TclCmd/while.html
 
 /** https://tcl.tk/man/tcl8.7/TclCmd/expr.html */
 export const expr_cmd = () =>
-  prec.left(precedence.min, seq("expr", wh, choice(tcl_word, repeat1(_word))));
+  prec.left(precedence.min, seq("expr", choice(tcl_word, repeat1(_word))));
 
 /** https://tcl.tk/man/tcl8.7/TclCmd/incr.html */
 export const incr_cmd = () =>
@@ -437,10 +406,8 @@ const enum keyword {
 const conditional_statement = (cmd: string) =>
   seq(
     cmd,
-    wh,
-    conditional_test(),
-    wh, // TODO: use expr construct
-    optional(seq(keyword.then, wh)),
+    conditional_test(), // TODO: use expr construct
+    optional(keyword.then),
     _body(),
   );
 export const if_cond = () => conditional_statement(keyword.if);
@@ -449,28 +416,19 @@ export const else_cond = () => conditional_statement(keyword.else);
 
 /** https://tcl.tk/man/tcl8.7/TclCmd/variable.html */
 export const variable_cmd = () =>
-  seq("variable", wh, variable_def(), optional(seq(__word)));
+  seq("variable", variable_def(), optional(_word));
 /** https://tcl.tk/man/tcl8.7/TclCmd/global.html */
-export const global_cmd = () => seq(keyword.global, wh, variable_def());
+export const global_cmd = () => seq(keyword.global, variable_def());
 /** https://tcl.tk/man/tcl8.7/TclCmd/if.html */
 export const if_cond_cmd = () =>
-  seq(if_cond, wh, repeat(seq(elsif_cond, wh)), optional(else_cond));
+  seq(if_cond, repeat(elsif_cond), optional(else_cond));
 
 /** https://tcl.tk/man/tcl8.7/TclCmd/while.html */
-export const while_cmd = () =>
-  seq(keyword.while, wh, conditional_test(), wh, _body());
+export const while_cmd = () => seq(keyword.while, conditional_test(), _body());
 
 /** https://tcl.tk/man/tcl8.7/TclCmd/proc.html */
 export const proc_def_cmd = () =>
-  seq(
-    keyword.proc,
-    wh,
-    field("name", bare_word),
-    wh,
-    field("args", _word),
-    wh,
-    _body(),
-  );
+  seq(keyword.proc, field("name", bare_word), field("args", _word), _body());
 // TODO: info : https://tcl.tk/man/tcl8.7/TclCmd/info.html
 /** https://tcl.tk/man/tcl8.7/TclCmd/namespace.html */
 export const namespace_cmd = () =>
@@ -479,13 +437,13 @@ export const namespace_cmd = () =>
     seq(
       keyword.namespace,
       choice(
-        "current",
         seq(
           "children",
-          optional(_opt_word /* namespace */),
-          optional(_opt_word /* pattern */),
+          optional(_word /* namespace */),
+          optional(_word /* pattern */),
         ),
         seq("code", _body()),
+        seq("current"),
         seq("delete", optional(_args)),
         seq("ensemble", optional(_args)), // TODO: handle map, parameter, prefixes, subcommands
         seq("eval", _word /* namespace */, choice(tcl_word, repeat1(_word))),
@@ -493,8 +451,8 @@ export const namespace_cmd = () =>
         seq("export", optional("-clear"), optional(_args)), // TODO: mark exports
         seq("forget", optional(_patterns)),
         seq("import", optional("-force"), optional(_patterns)),
-        seq("inscope", __word /**namespace */, _body(), optional(_args)),
-        seq("origin", __word /**command */),
+        seq("inscope", _word /**namespace */, _body(), optional(_args)),
+        seq("origin", _word /**command */),
         seq("parent", optional(_word) /**namespace */),
         seq("path", optional(_word) /**namespacelist */),
         seq("qualifiers", _word /**string */),
@@ -547,19 +505,17 @@ export const dict_cmd = () =>
     precedence.min,
     seq(
       "dict",
-      wh,
       choice(
         seq("create", repeat(seq(_word, _word))),
         seq(
           choice("for", "map"),
-          seq("{", optional(wh), _word, wh, _word, optional(wh), "}"),
+          seq("{", _word, _word, "}"),
           variable_ref(),
-          wh,
           tcl_word,
         ),
-        seq("merge", wh, repeat(_word)), // dict merge ?dictionaryValue ...?
+        seq("merge", repeat(_word)), // dict merge ?dictionaryValue ...?
         // lowest precedence
-        seq(_word, wh, variable_ref(), optional(_args)),
+        seq(_word, variable_ref(), optional(_args)),
       ),
 
       // dict append dictionaryVariable key ?string ...?
@@ -593,7 +549,6 @@ export const unset_cmd = () => seq("unset", _args);
 export const uplevel_cmd = () =>
   seq(
     "uplevel",
-    wh,
     field("levels_up", optional(choice(integer, seq("#", integer)))),
     choice(tcl_word, _args),
   );
@@ -602,19 +557,11 @@ export const uplevel_cmd = () =>
 export const switch_cmd = () =>
   seq(
     "switch",
-    field("options", repeat(__word)),
-    optional("--"),
+    _opts,
+    prec(precedence._opts, optional("--")),
     choice(
-      prec(
-        2,
-        seq(
-          "{",
-          repeat(seq(_word, __tcl_word, wh)),
-          seq(_word, __tcl_word),
-          "}",
-        ),
-      ),
-      prec(1, seq(repeat(seq(_word, __tcl_word, wh)), seq(_word, __tcl_word))),
+      prec(2, seq("{", repeat1(seq(_word, tcl_word)), "}")),
+      prec(1, repeat1(seq(_word, tcl_word))),
     ),
   );
 /** https://tcl.tk/man/tcl8.7/TclCmd/eval.html */
