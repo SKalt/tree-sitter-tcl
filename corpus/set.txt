@@ -18,7 +18,7 @@ list [catch {set} msg] $msg
             (catch_cmd
               (tcl_word (ERROR))
                 (bare_word)))))
-       (dollar_sub (bare_word)))))
+       (dollar_sub))))
 
 =======
 set-1.2: TclCompileSetCmd: simple variable name
@@ -38,7 +38,7 @@ list [set i] $i
             (command
               (set_cmd
                 (bare_word)))))
-       (dollar_sub (bare_word)))))
+       (dollar_sub))))
 
 =======
 set-1.3: TclCompileSetCmd: error compiling variable name
@@ -81,7 +81,7 @@ list [set "i"] $i
           (command
             (set_cmd
                 (quote_word)))))
-       (dollar_sub (bare_word)))))
+       (dollar_sub))))
 
 =======
 set-1.5: TclCompileSetCmd: simple variable name in braces
@@ -100,8 +100,7 @@ list [set {a simple var}] ${a simple var}
         (tcl_script
           (command
             (set_cmd (brace_word)))))
-      (dollar_sub
-        (brace_word)))))
+      (dollar_sub))))
 
 
 =======
@@ -126,10 +125,7 @@ list [set a(foo)] $a(foo)
               (array_ref
                 (bare_word)
                 (bare_word))))))
-      (dollar_sub
-        (array_ref
-          (bare_word)
-          (bare_word))))))
+      (dollar_sub (bare_word)))))
 =======
 set-1.7: TclCompileSetCmd: non-simple (computed) variable name
 =======
@@ -152,10 +148,8 @@ list [set $x] $i
         (tcl_script
           (command
             (set_cmd
-              (dollar_sub
-                (bare_word))))))
-      (dollar_sub
-        (bare_word)))))
+              (dollar_sub)))))
+      (dollar_sub))))
 
 =======
 set-1.8: TclCompileSetCmd: non-simple (computed) variable name
@@ -185,8 +179,7 @@ list [set [set x] 2] $i
                     (set_cmd
                       (bare_word)))))
               (integer)))))
-      (dollar_sub
-        (bare_word)))))
+      (dollar_sub))))
 
 =======
 set-1.9: TclCompileSetCmd: 3rd arg => assignment
@@ -206,8 +199,7 @@ set-1.9: TclCompileSetCmd: 3rd arg => assignment
               (command
                 (set_cmd
                   (bare_word)))))
-          (dollar_sub
-            (bare_word)))))
+          (dollar_sub))))
 =======
 set-1.10: TclCompileSetCmd: only two args => just getting value
 =======
@@ -275,8 +267,7 @@ set-1.12: TclCompileSetCmd: simple local name
               (command
                 (set_cmd
                   (bare_word)
-                  (dollar_sub
-                    (bare_word))))
+                  (dollar_sub)))
               (command
                 (set_cmd
                   (bare_word)))))))
@@ -360,3 +351,37 @@ set-1.16: TclCompileSetCmd: variable is array, elem substitutions
     catch {unset a}
     set x
 -------
+    (tcl_script
+      (command
+        (set_cmd
+          (bare_word)
+          (integer)))
+      (command
+        (set_cmd
+          (bare_word)
+          (integer)))
+      (command
+        (set_cmd
+          (array_ref
+            (bare_word)
+            (bare_word))
+          (integer)))
+      (command
+        (set_cmd
+          (bare_word)
+          (bracket_sub
+            (tcl_script
+              (command
+                (set_cmd
+                  (array_ref
+                    (bare_word)
+                    (bare_word) (dollar_sub))))))))
+      (command
+        (catch_cmd
+          (tcl_word
+            (command
+              (unset_cmd
+                (bare_word))))))
+      (command
+        (set_cmd
+          (bare_word))))

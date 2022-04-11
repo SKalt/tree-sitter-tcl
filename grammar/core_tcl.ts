@@ -102,8 +102,6 @@ export const tcl_script = () =>
 export const integer = () => token(prec(precedence.integer, /\d+/));
 export const float = () =>
   token(prec(precedence.float, choice(/\d+\.\d*/, /\.\d+/)));
-// export const temp_test_cmd = () =>
-//   seq("temp", choice(bare_word, integer, float, other_word));
 
 export const command = () =>
   // prec(
@@ -154,56 +152,97 @@ export const set_cmd = () =>
     ),
   );
 
+// export const dollar_sub_innards = () =>
+
 //  https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1383
 export const dollar_sub = () =>
+  // /\$(||)
   prec(
     precedence.dollar_sub,
-    seq("$", choice(brace_word, bare_word, array_ref)),
+    seq(
+      "$",
+      prec.right(
+        precedence.min,
+        choice(
+          seq(
+            field("variable_ref", token.immediate(_bare_word_pattern)),
+            repeat(dollar_sub),
+          ),
+          seq(
+            token.immediate("{"),
+            field("variable_ref", _brace_word_innards),
+            "}",
+          ),
+          // seq(token.immediate(_bare_word_pattern), repeat1(dollar_sub)),
+          seq(
+            token.immediate(_bare_word_pattern),
+            token.immediate("("),
+            field("index", optional(_word)),
+            token.immediate(")"),
+          ),
+        ),
+      ),
+    ),
   );
-// see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1457
 
+// see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1457
 export const array_ref = () =>
   prec(
     precedence.array_ref,
-    seq(field("array", bare_word), "(", field("index", optional(_word)), ")"),
+    seq(
+      field("array", bare_word),
+      token.immediate("("),
+      field("index", optional(_word)),
+      token.immediate(")"),
+    ),
   );
 export const bracket_sub = () => seq("[", tcl_script, "]");
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L565, TclIsBareword
 // function name/identifier/bare variable name
-export const bare_word = () => token(/[a-zA-Z0-9_]+/);
+const _bare_word_pattern = /[a-zA-Z0-9_]+/;
+export const bare_word = () => token(_bare_word_pattern);
 export const quote_word = () =>
   prec.left(
     precedence.max,
     seq('"', repeat(choice('\\"', dollar_sub, bracket_sub, /[^"]+/)), '"'),
   );
-export const brace_word = () =>
-  seq("{", optional(choice(brace_word, /[^\{\}]+/)), "}");
+export const brace_word = () => seq("{", repeat(_brace_word_innards), "}");
+export const _brace_word_innards = () => choice(brace_word, /[^\{\}]+/);
 
 // TODO: parse backslash escapes; see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L782
 
 // see https://github.com/tcltk/tcl/blob/main/library/word.tcl
 // see https://github.com/tcltk/tcl/blob/main/generic/regc_lex.c
-export const comment = () => /\s*#.*/;
+export const comment = () => /\s*#[.]*/;
 export const other_word = () => prec(precedence.min, /[^\s;\(\)\[\]\{\}\$"]+/);
+/** e.g. foo$bar$baz */
+// export const implicit_concat = () => prec.right(0, repeat1(dollar_sub));
+// prec.right(
+//   precedence.max,
+//   seq(bare_word, prec.left(precedence.min, repeat1(implicit_concat_innards))),
+// );
+// export const implicit_concat_innards = () =>
+//   seq(token.immediate("$"), dollar_sub_innards);
+
 export const _word = () =>
-  prec(
+  prec.right(
     precedence.word,
     choice(
       quote_word,
       brace_word,
       bracket_sub,
-      dollar_sub,
       array_ref,
 
+      repeat1(dollar_sub),
+      seq(bare_word, repeat(dollar_sub)),
+      // bare_word,
       float,
       integer,
-      bare_word,
       other_word,
     ),
   );
 // TODO: indicate that bare_word has precedence over non-whitespace
 
-// TODO: recursive parsing
 export const tcl_word = () =>
   prec(
     precedence.tcl_word,
@@ -285,7 +324,12 @@ export const for_cmd = () =>
   );
 /* https://tcl.tk/man/tcl8.7/TclCmd/foreach.html */
 export const foreach_cmd = () =>
-  seq("foreach", repeat(seq(_word, _word)), tcl_word);
+  seq(
+    "foreach",
+    repeat(seq(_word, _word, optional(choice(_newline, _escaped_newline)))),
+    tcl_word,
+  );
+
 /** https://tcl.tk/man/tcl8.7/TclCmd/list.html */
 export const list_cmd = () =>
   choice(

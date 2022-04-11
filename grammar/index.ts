@@ -8,6 +8,9 @@ export default grammar({
     tcl_script, // top-level rule
     ...others,
   },
-  conflicts: [["tcl_word", "_word"]],
+  conflicts: [
+    ["tcl_word", "_word"],
+    ["quote_word", "_word"],
+  ],
   extras: [/[\t ]+/],
 });
