@@ -69,7 +69,11 @@ export const bare_word = () =>
   token(prec(/[a-zA-Z0-9_]+/, precedence.bare_word));
 export const quote_word = () =>
   prec.left(
-    seq('"', repeat(choice('\\"', dollar_sub, bracket_sub, /[^"$]+/)), '"'),
+    seq(
+      '"',
+      repeat(choice('\\"', "\\[", dollar_sub, bracket_sub, /[^"$\[]+/)),
+      '"',
+    ),
     precedence.quote,
   );
 
