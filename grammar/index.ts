@@ -9,8 +9,8 @@ export default grammar({
     ...others,
   },
   conflicts: [
-    ["tcl_word", "_word"],
-    ["quote_word", "_word"],
+    ["_word", "tcl_word"],
+    ["_word", "quote_word"],
   ],
   extras: [/[\t ]+/],
 });

@@ -100,8 +100,7 @@ export const tcl_script = () =>
     seq(command, choice(";", seq(optional(comment), optional(_newline)))),
   );
 export const integer = () => token(prec(precedence.integer, /\d+/));
-export const float = () =>
-  token(prec(precedence.float, choice(/\d+\.\d*/, /\.\d+/)));
+export const float = () => token(choice(/\d+\.\d*/, /\.\d+/));
 
 export const command = () =>
   // prec(
