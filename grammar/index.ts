@@ -1,16 +1,16 @@
-import { grammar } from "ts-dsl-tree-sitter/src/functional";
+import { grammar, optional } from "ts-dsl-tree-sitter/src/functional";
 import * as core_rules from "./core_tcl";
 
-const { tcl_script, ...others } = core_rules;
 export default grammar({
   name: "tcl",
   rules: {
-    tcl_script, // top-level rule
-    ...others,
+    program: () => optional(core_rules.tcl_script), // top-level rule
+    ...core_rules,
   },
   conflicts: [
-    ["_word", "tcl_word"],
+    ["brace_word", "tcl_word"],
+    // ["tcl_script"],
     // ["_word", "quote_word"],
   ],
-  extras: [/[\t ]+/],
+  extras: [],
 });

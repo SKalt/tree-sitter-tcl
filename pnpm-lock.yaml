@@ -9,7 +9,7 @@ specifiers:
 
 dependencies:
   nan: 2.15.0
-  ts-dsl-tree-sitter: github.com/skalt/ts-dsl-tree-sitter/4f5bb535837865c8b94e33322bcc0d88885e5c03
+  ts-dsl-tree-sitter: github.com/skalt/ts-dsl-tree-sitter/0df802b6585e567ebc0c11025c28a287745af86c
 
 devDependencies:
   esbuild: 0.14.29
@@ -258,8 +258,8 @@ packages:
     requiresBuild: true
     dev: true
 
-  github.com/skalt/ts-dsl-tree-sitter/4f5bb535837865c8b94e33322bcc0d88885e5c03:
-    resolution: {tarball: https://codeload.github.com/skalt/ts-dsl-tree-sitter/tar.gz/4f5bb535837865c8b94e33322bcc0d88885e5c03}
+  github.com/skalt/ts-dsl-tree-sitter/0df802b6585e567ebc0c11025c28a287745af86c:
+    resolution: {tarball: https://codeload.github.com/skalt/ts-dsl-tree-sitter/tar.gz/0df802b6585e567ebc0c11025c28a287745af86c}
     name: ts-dsl-tree-sitter
     version: 1.0.0
     engines: {node: '>=10'}

@@ -11,7 +11,7 @@ playground: ./tree-sitter-tcl.wasm
 	./node_modules/.bin/tree-sitter playground
 wasm: ./tree-sitter-tcl.wasm
 
-./tree-sitter-tcl.wasm: ./src/grammar.json
+./tree-sitter-tcl.wasm: ./src/parser.c
 	./node_modules/.bin/tree-sitter build-wasm
 ./src/grammar.json: ./grammar/grammar.ts ./grammar/index.ts ./grammar/core_tcl.ts
 	./node_modules/.bin/esbuild --bundle --format=iife --platform=node --target=node14 ./grammar/grammar.ts > /tmp/bundle.js

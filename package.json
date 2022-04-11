@@ -8,7 +8,6 @@
     "highlight": "tree-sitter highlight",
     "tags": "tree-sitter tags",
     "query": "tree-sitter query",
-    "preui": "yarn generate && yarn generate-wasm",
     "ui": "yarn web-ui"
   },
   "dependencies": {
