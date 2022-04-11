@@ -98,8 +98,15 @@
       }
     },
     "bare_word": {
-      "type": "PATTERN",
-      "value": "[a-zA-Z0-9_]+"
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 3,
+        "content": {
+          "type": "PATTERN",
+          "value": "[a-zA-Z0-9_]+"
+        }
+      }
     },
     "brace_word": {
       "type": "PATTERN",
@@ -210,10 +217,10 @@
       ]
     },
     "float": {
-      "type": "PREC",
-      "value": 5,
+      "type": "TOKEN",
       "content": {
-        "type": "TOKEN",
+        "type": "PREC",
+        "value": 5,
         "content": {
           "type": "CHOICE",
           "members": [
@@ -232,8 +239,12 @@
     "integer": {
       "type": "TOKEN",
       "content": {
-        "type": "PATTERN",
-        "value": "\\d+"
+        "type": "PREC",
+        "value": 4,
+        "content": {
+          "type": "PATTERN",
+          "value": "\\d+"
+        }
       }
     },
     "other_word": {
@@ -500,5 +511,6 @@
       "tcl_word"
     ]
   ],
+  "word": "bare_word",
   "supertypes": []
 }

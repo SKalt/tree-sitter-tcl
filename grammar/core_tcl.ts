@@ -44,9 +44,9 @@ export const tcl_script = () =>
     ),
     precedence.min,
   );
-export const integer = () => token(/\d+/);
+export const integer = () => token(prec(/\d+/, precedence.integer));
 export const float = () =>
-  prec(token(choice(/\d+\.\d*/, /\.\d+/)), precedence.float);
+  token(prec(choice(/\d+\.\d*/, /\.\d+/), precedence.float));
 
 export const command = () =>
   prec.right(
@@ -65,7 +65,8 @@ export const array_ref = () =>
 export const bracket_sub = () => seq("[", optional(tcl_script), "]");
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L565, TclIsBareword
 /** function name/identifier/bare variable name  */
-export const bare_word = () => /[a-zA-Z0-9_]+/;
+export const bare_word = () =>
+  token(prec(/[a-zA-Z0-9_]+/, precedence.bare_word));
 export const quote_word = () =>
   prec.left(
     seq('"', repeat(choice('\\"', dollar_sub, bracket_sub, /[^"$]+/)), '"'),

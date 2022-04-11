@@ -7,6 +7,7 @@ export default grammar({
     program: () => optional(core_rules.tcl_script), // top-level rule
     ...core_rules,
   },
+  word: core_rules.bare_word.name,
   conflicts: [
     ["brace_word", "tcl_word"],
     // ["tcl_script"],
