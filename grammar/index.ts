@@ -10,7 +10,7 @@ export default grammar({
   },
   conflicts: [
     ["_word", "tcl_word"],
-    ["_word", "quote_word"],
+    // ["_word", "quote_word"],
   ],
   extras: [/[\t ]+/],
 });
