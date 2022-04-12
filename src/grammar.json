@@ -109,8 +109,21 @@
       }
     },
     "brace_word": {
-      "type": "PATTERN",
-      "value": "[{][\\}]+[}]"
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "PATTERN",
+          "value": "[^}]*"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
     },
     "bracket_sub": {
       "type": "SEQ",
@@ -204,8 +217,21 @@
             {
               "type": "IMMEDIATE_TOKEN",
               "content": {
-                "type": "PATTERN",
-                "value": "[{][\\}]+[}]"
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "{"
+                  },
+                  {
+                    "type": "PATTERN",
+                    "value": "[^}]*"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "}"
+                  }
+                ]
               }
             },
             {
@@ -246,6 +272,46 @@
           "value": "\\d+"
         }
       }
+    },
+    "ns_ref": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "bare_word"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "REPEAT1",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": 9,
+                  "content": {
+                    "type": "STRING",
+                    "value": "::"
+                  }
+                }
+              },
+              {
+                "type": "SYMBOL",
+                "name": "bare_word"
+              }
+            ]
+          }
+        }
+      ]
     },
     "other_word": {
       "type": "PATTERN",
@@ -443,6 +509,10 @@
           {
             "type": "SYMBOL",
             "name": "array_ref"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "ns_ref"
           },
           {
             "type": "REPEAT1",

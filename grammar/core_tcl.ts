@@ -82,8 +82,12 @@ export const quote_word = () =>
 // see https://github.com/tcltk/tcl/blob/main/library/word.tcl
 // see https://github.com/tcltk/tcl/blob/main/generic/regc_lex.c
 export const comment = () => /\s*#[^\n]*/;
-export const other_word = () => /[^\s;\(\)\[\]\{\}\$"]+/; // int, float need to overpower this
-
+export const other_word = () => /[^\s;\(\)\[\]\{\}\$"]+/;
+export const ns_ref = () =>
+  seq(
+    optional(bare_word),
+    repeat1(seq(token(prec("::", precedence.max)), bare_word)),
+  );
 export const word = () =>
   prec.right(
     choice(
@@ -92,6 +96,7 @@ export const word = () =>
       brace_word,
       tcl_word,
       array_ref,
+      ns_ref,
       repeat1(dollar_sub),
       seq(bare_word, repeat(dollar_sub)),
       float,

@@ -1,10 +1,52 @@
 ; Literals
 
-("$" @operator)
+[
+  "$"
+  "::"
 
-(integer) @number
-(float) @number
+;  "-"  ; unary
+;  "+"  ; ^
+;  "~"  ; ^
+;  "!"  ; ^
+
+;  "**" ;
+
+;  "*"
+;  "/"
+
+;  "<<"
+;  ">>"
+
+;  "<"
+;  ">"
+;  "<="
+;  ">="
+;  "gt"
+;  "lt"
+;  "le"
+;  "ge"
+;  "in"
+;  "ni"
+
+;  "&"
+;  "^"
+;  "|"
+
+;  "&&"
+;  "||"
+
+;  "?"
+;  ":"
+] @operator)
+
+[
+  (integer)
+  (float)
+] @number
 (command (bare_word) @function)
 (quote_word) @string
 
-(brace_word) @embedded
+(bracket_sub
+  "[" @punctuation.special
+  "]" @punctuation.special
+) @embedded
