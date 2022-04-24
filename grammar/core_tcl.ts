@@ -16,6 +16,7 @@ const enum precedence { // least -> greatest
   min = 1,
   word,
   bare_word,
+  other_word,
   integer,
   float,
   array_ref,
@@ -24,9 +25,18 @@ const enum precedence { // least -> greatest
   max,
 }
 
-export const _ = () => /[\t ]+/;
-export const _newline = () => /(\r?\n)+/;
-export const _escaped_newline = () => /\\\r?\n/; // these take precedence over newlines
+export const _ = () =>
+  prec.right(repeat1(choice(/[\r\t ]+/, _escaped_whitespace)));
+export const _newline = () => /\n+/;
+
+export const _escaped_newline = () => /\\\n/; // these take precedence over newlines
+
+export const _escaped_whitespace = () =>
+  prec.right(repeat1(choice(_escaped_newline, /\\\r/, /\\\t/, /\\ /)));
+
+export const _escaped_char = () => /\\[^\s]/;
+
+export const escape = () => choice(_escaped_char, _escaped_whitespace);
 
 // https://tcl.tk/about/language.html ----------------------------------------------------
 // Tcl scripts are made up of commands separated by newlines or semicolons.
@@ -49,12 +59,10 @@ export const float = () =>
   token(prec(choice(/\d+\.\d*/, /\.\d+/), precedence.float));
 
 export const command = () =>
-  prec.right(
-    seq(bare_word, repeat(seq(choice(_, _escaped_newline), optional(word)))),
-  );
+  prec.right(seq(bare_word, repeat(seq(_, optional(word)))));
 
 export const dollar_sub = () =>
-  seq("$", choice(bare_word, token.immediate(brace_word()), array_ref));
+  seq("$", choice(bare_word, brace_word, array_ref));
 
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1457
 export const array_ref = () =>
@@ -71,7 +79,7 @@ export const quote_word = () =>
   prec.left(
     seq(
       '"',
-      repeat(choice('\\"', "\\[", dollar_sub, bracket_sub, /[^"$\[]+/)),
+      repeat(choice(_escaped_char, dollar_sub, bracket_sub, /[^\["$]+/)),
       '"',
     ),
     precedence.quote,
@@ -82,7 +90,11 @@ export const quote_word = () =>
 // see https://github.com/tcltk/tcl/blob/main/library/word.tcl
 // see https://github.com/tcltk/tcl/blob/main/generic/regc_lex.c
 export const comment = () => /\s*#[^\n]*/;
-export const other_word = () => /[^\s;\(\)\[\]\{\}\$"]+/;
+export const other_word = () =>
+  seq(
+    choice(bare_word, _escaped_char, /[^a-zA-Z0-9_\s;\(\)\[\]\{\}\$"]+/),
+    repeat(choice(/[^\s;$\\]+/, _escaped_char, dollar_sub, bracket_sub)),
+  );
 export const ns_ref = () =>
   seq(
     optional(bare_word),
@@ -96,16 +108,16 @@ export const word = () =>
       brace_word,
       tcl_word,
       array_ref,
-      ns_ref,
       repeat1(dollar_sub),
-      seq(bare_word, repeat(dollar_sub)),
+      ns_ref,
+      bare_word,
       float,
       integer,
-      seq(other_word, choice(other_word, dollar_sub)),
+      other_word,
     ),
     precedence.word,
   );
 
-export const brace_word = () => /[{][\}]+[}]/;
+export const brace_word = () => seq("{", /[^\}]*/, "}");
 export const tcl_word = () =>
   prec.dynamic(seq("{", optional(tcl_script), "}"), precedence.tcl_word);
