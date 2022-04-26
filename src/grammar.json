@@ -105,45 +105,41 @@
       "value": "\\n+"
     },
     "array_ref": {
-      "type": "PREC",
-      "value": 7,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "FIELD",
-            "name": "array",
-            "content": {
-              "type": "SYMBOL",
-              "name": "bare_word"
-            }
-          },
-          {
-            "type": "STRING",
-            "value": "("
-          },
-          {
-            "type": "FIELD",
-            "name": "index",
-            "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "word"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            }
-          },
-          {
-            "type": "STRING",
-            "value": ")"
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "bare_word"
           }
-        ]
-      }
+        },
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "FIELD",
+          "name": "index",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "word"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
     },
     "bare_word": {
       "type": "TOKEN",
@@ -247,21 +243,25 @@
           "value": "$"
         },
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "bare_word"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "brace_word"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "array_ref"
-            }
-          ]
+          "type": "FIELD",
+          "name": "ref",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "bare_word"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "brace_word"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "array_ref"
+              }
+            ]
+          }
         }
       ]
     },
@@ -356,16 +356,16 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "bare_word"
+              "type": "PATTERN",
+              "value": "[^\\[\\s;$\\\\{\"]"
             },
             {
               "type": "SYMBOL",
               "name": "_escaped_char"
             },
             {
-              "type": "PATTERN",
-              "value": "[^a-zA-Z0-9_\\s;\\(\\)\\[\\]\\{\\}\\$\"]+"
+              "type": "SYMBOL",
+              "name": "bracket_sub"
             }
           ]
         },
@@ -376,7 +376,7 @@
             "members": [
               {
                 "type": "PATTERN",
-                "value": "[^\\s;$\\\\]+"
+                "value": "[^\\[\\s;$\\\\]+"
               },
               {
                 "type": "SYMBOL",
@@ -574,10 +574,6 @@
           },
           {
             "type": "SYMBOL",
-            "name": "brace_word"
-          },
-          {
-            "type": "SYMBOL",
             "name": "tcl_word"
           },
           {
@@ -585,11 +581,12 @@
             "name": "array_ref"
           },
           {
-            "type": "REPEAT1",
-            "content": {
-              "type": "SYMBOL",
-              "name": "dollar_sub"
-            }
+            "type": "SYMBOL",
+            "name": "other_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "dollar_sub"
           },
           {
             "type": "SYMBOL",
@@ -606,10 +603,6 @@
           {
             "type": "SYMBOL",
             "name": "integer"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "other_word"
           }
         ]
       }
@@ -625,8 +618,8 @@
   "precedences": [],
   "conflicts": [
     [
-      "brace_word",
-      "tcl_word"
+      "other_word",
+      "array_ref"
     ]
   ],
   "word": "bare_word",

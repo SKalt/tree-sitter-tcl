@@ -22,5 +22,16 @@
   "main": "bindings/node",
   "prettier": {
     "trailingComma": "all"
-  }
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.tcl",
+      "file-types": [
+        "tcl"
+      ],
+      "first-line-regex": [
+        "#!.*tclsh"
+      ]
+    }
+  ]
 }

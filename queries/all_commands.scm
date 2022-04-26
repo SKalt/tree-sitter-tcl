@@ -43,9 +43,11 @@
 ;  after                    ; https://tcl.tk/man/tcl8.7/TclCmd/after.html
 ;  append                   ; https://tcl.tk/man/tcl8.7/TclCmd/append.html
 ;  apply                    ; https://tcl.tk/man/tcl8.7/TclCmd/apply.html
+
 ;  array                    ; https://tcl.tk/man/tcl8.7/TclCmd/array.html
 ;  bgerror                  ; https://tcl.tk/man/tcl8.7/TclCmd/bgerror.html
 ;  binary                   ; https://tcl.tk/man/tcl8.7/TclCmd/binary.html
+
 ;  break                    ; https://tcl.tk/man/tcl8.7/TclCmd/break.html
 ;  callback                 ; https://tcl.tk/man/tcl8.7/TclCmd/callback.html
 ;  catch                    ; https://tcl.tk/man/tcl8.7/TclCmd/catch.html
@@ -61,11 +63,13 @@
 ;  dict                     ; https://tcl.tk/man/tcl8.7/TclCmd/dict.html
 ;  encoding                 ; https://tcl.tk/man/tcl8.7/TclCmd/encoding.html
 ;  eof                      ; https://tcl.tk/man/tcl8.7/TclCmd/eof.html
+
 ;  error                    ; https://tcl.tk/man/tcl8.7/TclCmd/error.html
 ;  eval                     ; https://tcl.tk/man/tcl8.7/TclCmd/eval.html
 ;  exec                     ; https://tcl.tk/man/tcl8.7/TclCmd/exec.html
 ;  exit                     ; https://tcl.tk/man/tcl8.7/TclCmd/exit.html
 ;  expr                     ; https://tcl.tk/man/tcl8.7/TclCmd/expr.html
+
 ;  fblocked                 ; https://tcl.tk/man/tcl8.7/TclCmd/fblocked.html
 ;  fconfigure               ; https://tcl.tk/man/tcl8.7/TclCmd/fconfigure.html
 ;  fcopy                    ; https://tcl.tk/man/tcl8.7/TclCmd/fcopy.html
@@ -73,8 +77,10 @@
 ;  fileevent                ; https://tcl.tk/man/tcl8.7/TclCmd/fileevent.html
 ;  filename                 ; https://tcl.tk/man/tcl8.7/TclCmd/filename.html
 ;  flush                    ; https://tcl.tk/man/tcl8.7/TclCmd/flush.html
+
 ;  for                      ; https://tcl.tk/man/tcl8.7/TclCmd/for.html
 ;  foreach                  ; https://tcl.tk/man/tcl8.7/TclCmd/foreach.html
+
 ;  format                   ; https://tcl.tk/man/tcl8.7/TclCmd/format.html
 ;  fpclassify               ; https://tcl.tk/man/tcl8.7/TclCmd/fpclassify.html
 ;  gets                     ; https://tcl.tk/man/tcl8.7/TclCmd/gets.html
@@ -82,8 +88,10 @@
 ;  global                   ; https://tcl.tk/man/tcl8.7/TclCmd/global.html
 ;  history                  ; https://tcl.tk/man/tcl8.7/TclCmd/history.html
 ;  http                     ; https://tcl.tk/man/tcl8.7/TclCmd/http.html
+
 ;  if                       ; https://tcl.tk/man/tcl8.7/TclCmd/if.html
 ;  incr                     ; https://tcl.tk/man/tcl8.7/TclCmd/incr.html
+
 ;  info                     ; https://tcl.tk/man/tcl8.7/TclCmd/info.html
 ;  interp                   ; https://tcl.tk/man/tcl8.7/TclCmd/interp.html
 ;  join                     ; https://tcl.tk/man/tcl8.7/TclCmd/join.html
@@ -134,6 +142,7 @@
 ;  platform::shell          ; https://tcl.tk/man/tcl8.7/TclCmd/platform_shell.html
 
 ;  proc                     ; https://tcl.tk/man/tcl8.7/TclCmd/proc.html
+
 ;  puts                     ; https://tcl.tk/man/tcl8.7/TclCmd/puts.html
 ;  pwd                      ; https://tcl.tk/man/tcl8.7/TclCmd/pwd.html
 ;  re_syntax                ; https://tcl.tk/man/tcl8.7/TclCmd/re_syntax.html
@@ -143,7 +152,9 @@
 ;  registry                 ; https://tcl.tk/man/tcl8.7/TclCmd/registry.html
 ;  regsub                   ; https://tcl.tk/man/tcl8.7/TclCmd/regsub.html
 ;  rename                   ; https://tcl.tk/man/tcl8.7/TclCmd/rename.html
+
 ;  return                   ; https://tcl.tk/man/tcl8.7/TclCmd/return.html
+
 ;  safe                     ; https://tcl.tk/man/tcl8.7/TclCmd/safe.html
 ;  scan                     ; https://tcl.tk/man/tcl8.7/TclCmd/scan.html
 ;  seek                     ; https://tcl.tk/man/tcl8.7/TclCmd/seek.html

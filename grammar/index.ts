@@ -8,10 +8,6 @@ export default grammar({
     ...core_rules,
   },
   word: core_rules.bare_word.name,
-  conflicts: [
-    ["brace_word", "tcl_word"],
-    // ["tcl_script"],
-    // ["_word", "quote_word"],
-  ],
+  conflicts: [["other_word", "array_ref"]],
   extras: [],
 });
