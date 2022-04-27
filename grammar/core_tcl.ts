@@ -41,9 +41,9 @@ export const _escaped_newline = () => /\\\n/; // these take precedence over newl
 export const _escaped_whitespace = () =>
   prec.right(repeat1(choice(_escaped_newline, /\\\r/, /\\\t/, /\\ /)));
 
-export const _escaped_char = () => /\\[^\s]/;
+export const escaped_char = () => /\\[\w.\\~!@#$%^&*()-+=:"'?,]/;
 
-export const escape = () => choice(_escaped_char, _escaped_whitespace);
+export const _escape = () => choice(escaped_char, _escaped_whitespace);
 
 // https://tcl.tk/about/language.html ----------------------------------------------------
 // Tcl scripts are made up of commands separated by newlines or semicolons.
@@ -81,11 +81,7 @@ export const bare_word = () =>
   token(prec(/[a-zA-Z0-9_]+/, Precedence.bare_word));
 export const quote_word = () =>
   prec.left(
-    seq(
-      '"',
-      repeat(choice(_escaped_char, dollar_sub, bracket_sub, /[^\["$]+/)),
-      '"',
-    ),
+    seq('"', repeat(choice(_escape, dollar_sub, bracket_sub, /[^\["$]+/)), '"'),
     Precedence.quote,
   );
 
@@ -96,8 +92,8 @@ export const quote_word = () =>
 export const comment = () => /\s*#[^\n]*/;
 export const other_word = () =>
   seq(
-    choice(/[^\[\s;$\\{"]/, _escaped_char, bracket_sub),
-    repeat(choice(/[^\[\s;$\\]+/, _escaped_char, dollar_sub, bracket_sub)),
+    choice(/[^\[\s;$\\{"]/, escaped_char, bracket_sub, bare_word),
+    repeat(choice(/[^\[\s;$\\]/, escaped_char, dollar_sub, bracket_sub)),
   );
 export const ns_ref = () =>
   seq(

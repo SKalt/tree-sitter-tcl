@@ -8,6 +8,6 @@ export default grammar({
     ...core_rules,
   },
   word: core_rules.bare_word.name,
-  conflicts: [["other_word", "array_ref"]],
+  conflicts: [],
   extras: [],
 });

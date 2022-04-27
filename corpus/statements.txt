@@ -1,0 +1,77 @@
+====
+other_word
+====
+puts ~~~
+puts a"b
+puts a$b
+-----
+(program
+  (tcl_script
+    (command
+      (bare_word)
+      (word
+        (other_word)))
+    (command
+      (bare_word)
+      (word
+        (other_word
+          (bare_word))))
+    (command
+      (bare_word)
+      (word
+        (other_word
+          (bare_word)
+          (dollar_sub
+            (bare_word)))))))
+
+====
+dollar_sub
+====
+puts "a $b"
+puts "[puts 1]"
+puts "\""
+puts "a\
+b"
+----
+(program
+  (tcl_script
+    (command
+      (bare_word)
+      (word
+        (quote_word
+          (dollar_sub
+            (bare_word)))))
+    (command
+      (bare_word)
+      (word
+        (quote_word
+          (bracket_sub
+            (tcl_script
+              (command
+                (bare_word)
+                (word
+                  (integer))))))))
+    (command
+      (bare_word)
+      (word
+        (quote_word (escaped_char))))
+    (command
+      (bare_word)
+      (word
+        (quote_word
+          escaped)))))
+
+====
+array_ref
+====
+set a(1) 2
+----
+(program
+  (tcl_script
+    (command
+      (bare_word)
+      (word
+        (array_ref
+          name: (bare_word)
+          index: (word (integer))))
+      (word (integer)))))

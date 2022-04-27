@@ -64,9 +64,18 @@
         }
       ]
     },
-    "_escaped_char": {
-      "type": "PATTERN",
-      "value": "\\\\[^\\s]"
+    "_escape": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "escaped_char"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_escaped_whitespace"
+        }
+      ]
     },
     "_escaped_newline": {
       "type": "PATTERN",
@@ -265,18 +274,9 @@
         }
       ]
     },
-    "escape": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "_escaped_char"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_escaped_whitespace"
-        }
-      ]
+    "escaped_char": {
+      "type": "PATTERN",
+      "value": "\\\\[\\w.\\\\~!@#$%^&*()-+=:\"'?,]"
     },
     "float": {
       "type": "TOKEN",
@@ -361,11 +361,15 @@
             },
             {
               "type": "SYMBOL",
-              "name": "_escaped_char"
+              "name": "escaped_char"
             },
             {
               "type": "SYMBOL",
               "name": "bracket_sub"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "bare_word"
             }
           ]
         },
@@ -376,11 +380,11 @@
             "members": [
               {
                 "type": "PATTERN",
-                "value": "[^\\[\\s;$\\\\]+"
+                "value": "[^\\[\\s;$\\\\]"
               },
               {
                 "type": "SYMBOL",
-                "name": "_escaped_char"
+                "name": "escaped_char"
               },
               {
                 "type": "SYMBOL",
@@ -412,7 +416,7 @@
               "members": [
                 {
                   "type": "SYMBOL",
-                  "name": "_escaped_char"
+                  "name": "_escape"
                 },
                 {
                   "type": "SYMBOL",
@@ -616,12 +620,7 @@
     }
   ],
   "precedences": [],
-  "conflicts": [
-    [
-      "other_word",
-      "array_ref"
-    ]
-  ],
+  "conflicts": [],
   "word": "bare_word",
   "supertypes": []
 }
