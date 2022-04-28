@@ -263,6 +263,10 @@
               },
               {
                 "type": "SYMBOL",
+                "name": "ns_ref"
+              },
+              {
+                "type": "SYMBOL",
                 "name": "brace_word"
               },
               {
@@ -362,6 +366,10 @@
             {
               "type": "SYMBOL",
               "name": "escaped_char"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "dollar_sub"
             },
             {
               "type": "SYMBOL",

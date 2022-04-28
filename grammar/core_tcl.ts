@@ -41,6 +41,7 @@ export const _escaped_newline = () => /\\\n/; // these take precedence over newl
 export const _escaped_whitespace = () =>
   prec.right(repeat1(choice(_escaped_newline, /\\\r/, /\\\t/, /\\ /)));
 
+// TODO: parse backslash escapes; see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L782
 export const escaped_char = () => /\\[\w.\\~!@#$%^&*()-+=:"'?,]/;
 
 export const _escape = () => choice(escaped_char, _escaped_whitespace);
@@ -69,7 +70,7 @@ export const command = () =>
   prec.right(seq(bare_word, repeat(seq(_, optional(word)))));
 
 export const dollar_sub = () =>
-  seq("$", field.ref(choice(bare_word, brace_word, array_ref)));
+  seq("$", field.ref(choice(bare_word, ns_ref, brace_word, array_ref)));
 
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1457
 export const array_ref = () =>
@@ -85,14 +86,12 @@ export const quote_word = () =>
     Precedence.quote,
   );
 
-// TODO: parse backslash escapes; see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L782
-
 // see https://github.com/tcltk/tcl/blob/main/library/word.tcl
 // see https://github.com/tcltk/tcl/blob/main/generic/regc_lex.c
 export const comment = () => /\s*#[^\n]*/;
 export const other_word = () =>
   seq(
-    choice(/[^\[\s;$\\{"]/, escaped_char, bracket_sub, bare_word),
+    choice(/[^\[\s;$\\{"]/, escaped_char, dollar_sub, bracket_sub, bare_word),
     repeat(choice(/[^\[\s;$\\]/, escaped_char, dollar_sub, bracket_sub)),
   );
 export const ns_ref = () =>

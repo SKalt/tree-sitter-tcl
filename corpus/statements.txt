@@ -25,7 +25,7 @@ puts a$b
             (bare_word)))))))
 
 ====
-dollar_sub
+double_quote
 ====
 puts "a $b"
 puts "[puts 1]"
@@ -62,9 +62,40 @@ b"
           escaped)))))
 
 ====
+dollar_sub
+====
+puts $a$b
+puts ${a b}
+puts $::a::b
+----
+(program
+  (tcl_script
+    (command
+      (bare_word)
+      (word
+        (other_word
+          (dollar_sub
+            ref: (bare_word))
+          (dollar_sub
+            ref: (bare_word)))))
+    (command
+      (bare_word)
+      (word
+        (dollar_sub
+          ref: (brace_word))))
+    (command
+      (bare_word)
+      (word
+        (dollar_sub
+          ref: (ns_ref
+            (bare_word)
+            (bare_word)))))))
+
+====
 array_ref
 ====
 set a(1) 2
+puts $a([set b])
 ----
 (program
   (tcl_script
@@ -74,4 +105,16 @@ set a(1) 2
         (array_ref
           name: (bare_word)
           index: (word (integer))))
-      (word (integer)))))
+      (word (integer)))
+    (command
+      (bare_word)
+      (word
+        (dollar_sub
+          ref: (array_ref
+            name: (bare_word)
+            index: (word
+              (bracket_sub
+                (tcl_script
+                  (command
+                    (bare_word)
+                    (word (bare_word))))))))))))
