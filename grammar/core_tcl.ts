@@ -41,10 +41,14 @@ export const _escaped_newline = () => /\\\n/; // these take precedence over newl
 export const _escaped_whitespace = () =>
   prec.right(repeat1(choice(_escaped_newline, /\\\r/, /\\\t/, /\\ /)));
 
+export const hex_escape = () => /\\[xuU][0-9a-fA-F]+/;
+export const octal_escape = () => /\\\[0-8]{1,3}/;
 // TODO: parse backslash escapes; see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L782
-export const escaped_char = () => /\\[\w.\\~!@#$%^&*()-+=:"'?,]/;
+export const escaped_char = () =>
+  choice(/\\a/, /\\b/, /\\f/, /\\n/, /\\t/, /\\v/, /\\\\/);
 
-export const _escape = () => choice(escaped_char, _escaped_whitespace);
+export const _escape = () =>
+  choice(escaped_char, hex_escape, octal_escape, _escaped_whitespace);
 
 // https://tcl.tk/about/language.html ----------------------------------------------------
 // Tcl scripts are made up of commands separated by newlines or semicolons.
@@ -67,14 +71,14 @@ export const float = () =>
   token(prec(choice(/\d+\.\d*/, /\.\d+/), Precedence.float));
 
 export const command = () =>
-  prec.right(seq(bare_word, repeat(seq(_, optional(word)))));
+  prec.right(seq(bare_word, repeat(seq(_, optional(_word)))));
 
 export const dollar_sub = () =>
   seq("$", field.ref(choice(bare_word, ns_ref, brace_word, array_ref)));
 
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1457
 export const array_ref = () =>
-  seq(field.name(bare_word), "(", field.index(optional(word)), ")");
+  seq(field.name(bare_word), "(", field.index(optional(_word)), ")");
 export const bracket_sub = () => seq("[", optional(tcl_script), "]");
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L565, TclIsBareword
 /** function name/identifier/bare variable name  */
@@ -99,7 +103,7 @@ export const ns_ref = () =>
     optional(bare_word),
     repeat1(seq(token(prec("::", Precedence.max)), bare_word)),
   );
-export const word = () =>
+export const _word = () =>
   prec.right(
     choice(
       quote_word,

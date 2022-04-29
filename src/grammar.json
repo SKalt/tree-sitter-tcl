@@ -73,6 +73,14 @@
         },
         {
           "type": "SYMBOL",
+          "name": "hex_escape"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "octal_escape"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_escaped_whitespace"
         }
       ]
@@ -113,6 +121,55 @@
       "type": "PATTERN",
       "value": "\\n+"
     },
+    "_word": {
+      "type": "PREC_RIGHT",
+      "value": 2,
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "quote_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "bracket_sub"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "tcl_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "array_ref"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "other_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "dollar_sub"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "ns_ref"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "bare_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "float"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "integer"
+          }
+        ]
+      }
+    },
     "array_ref": {
       "type": "SEQ",
       "members": [
@@ -136,7 +193,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "word"
+                "name": "_word"
               },
               {
                 "type": "BLANK"
@@ -227,7 +284,7 @@
                   "members": [
                     {
                       "type": "SYMBOL",
-                      "name": "word"
+                      "name": "_word"
                     },
                     {
                       "type": "BLANK"
@@ -279,8 +336,37 @@
       ]
     },
     "escaped_char": {
-      "type": "PATTERN",
-      "value": "\\\\[\\w.\\\\~!@#$%^&*()-+=:\"'?,]"
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "\\\\a"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\\\b"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\\\f"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\\\n"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\\\t"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\\\v"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\\\\\\\"
+        }
+      ]
     },
     "float": {
       "type": "TOKEN",
@@ -301,6 +387,10 @@
           ]
         }
       }
+    },
+    "hex_escape": {
+      "type": "PATTERN",
+      "value": "\\\\[xuU][0-9a-fA-F]+"
     },
     "integer": {
       "type": "TOKEN",
@@ -352,6 +442,10 @@
           }
         }
       ]
+    },
+    "octal_escape": {
+      "type": "PATTERN",
+      "value": "\\\\\\[0-8]{1,3}"
     },
     "other_word": {
       "type": "SEQ",
@@ -566,55 +660,6 @@
           {
             "type": "STRING",
             "value": "}"
-          }
-        ]
-      }
-    },
-    "word": {
-      "type": "PREC_RIGHT",
-      "value": 2,
-      "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "quote_word"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "bracket_sub"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "tcl_word"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "array_ref"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "other_word"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "dollar_sub"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "ns_ref"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "bare_word"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "float"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "integer"
           }
         ]
       }
