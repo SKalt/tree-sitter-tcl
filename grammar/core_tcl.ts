@@ -45,7 +45,7 @@ export const hex_escape = () => /\\[xuU][0-9a-fA-F]+/;
 export const octal_escape = () => /\\\[0-8]{1,3}/;
 // TODO: parse backslash escapes; see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L782
 export const escaped_char = () =>
-  choice(/\\a/, /\\b/, /\\f/, /\\n/, /\\t/, /\\v/, /\\\\/);
+  choice(/\\a/, /\\b/, /\\f/, /\\n/, /\\t/, /\\v/, /\\\\/, /\\./);
 
 export const _escape = () =>
   choice(escaped_char, hex_escape, octal_escape, _escaped_whitespace);
