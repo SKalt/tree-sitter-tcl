@@ -71,14 +71,14 @@ export const float = () =>
   token(prec(choice(/\d+\.\d*/, /\.\d+/), Precedence.float));
 
 export const command = () =>
-  prec.right(seq(bare_word, repeat(seq(_, optional(_word)))));
+  prec.right(seq(bare_word, repeat(seq(_, optional(word)))));
 
 export const dollar_sub = () =>
   seq("$", field.ref(choice(bare_word, ns_ref, brace_word, array_ref)));
 
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L1457
 export const array_ref = () =>
-  seq(field.name(bare_word), "(", field.index(optional(_word)), ")");
+  seq(field.name(bare_word), "(", field.index(optional(word)), ")");
 export const bracket_sub = () => seq("[", optional(tcl_script), "]");
 // see https://github.com/tcltk/tcl/blob/main/generic/tclParse.c#L565, TclIsBareword
 /** function name/identifier/bare variable name  */
@@ -103,7 +103,7 @@ export const ns_ref = () =>
     optional(bare_word),
     repeat1(seq(token(prec("::", Precedence.max)), bare_word)),
   );
-export const _word = () =>
+export const word = () =>
   prec.right(
     choice(
       quote_word,

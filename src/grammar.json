@@ -121,55 +121,6 @@
       "type": "PATTERN",
       "value": "\\n+"
     },
-    "_word": {
-      "type": "PREC_RIGHT",
-      "value": 2,
-      "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "quote_word"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "bracket_sub"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "tcl_word"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "array_ref"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "other_word"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "dollar_sub"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "ns_ref"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "bare_word"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "float"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "integer"
-          }
-        ]
-      }
-    },
     "array_ref": {
       "type": "SEQ",
       "members": [
@@ -193,7 +144,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_word"
+                "name": "word"
               },
               {
                 "type": "BLANK"
@@ -284,7 +235,7 @@
                   "members": [
                     {
                       "type": "SYMBOL",
-                      "name": "_word"
+                      "name": "word"
                     },
                     {
                       "type": "BLANK"
@@ -660,6 +611,55 @@
           {
             "type": "STRING",
             "value": "}"
+          }
+        ]
+      }
+    },
+    "word": {
+      "type": "PREC_RIGHT",
+      "value": 2,
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "quote_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "bracket_sub"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "tcl_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "array_ref"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "other_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "dollar_sub"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "ns_ref"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "bare_word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "float"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "integer"
           }
         ]
       }
